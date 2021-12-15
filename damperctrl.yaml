@@ -1,3 +1,4 @@
+
 substitutions:
   name: damperctrl
   friendly_name: Damper Control
@@ -92,9 +93,11 @@ api:
         - light.turn_on: 
             id: led
             effect: !lambda |-
-              if ( target > 30 ) {
+              if ( id(my_stepper).target > 30 ) {
+                ESP_LOGD("main", "Target gt 30 = %d", id(my_stepper).target);
                 return "Slow Pulse";
               }else {
+                ESP_LOGD("main", "Target lt 30 = %d", id(my_stepper).target);
                 return "Fast Pulse";
               }
                 
