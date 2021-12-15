@@ -93,11 +93,9 @@ api:
         - light.turn_on: 
             id: led
             effect: !lambda |-
-              if ( id(my_stepper).target > 30 ) {
-                ESP_LOGD("main", "Target gt 30 = %d", id(my_stepper).target);
+              if ( target > 30 ) {
                 return "Slow Pulse";
               }else {
-                ESP_LOGD("main", "Target lt 30 = %d", id(my_stepper).target);
                 return "Fast Pulse";
               }
                 
