@@ -1,0 +1,233 @@
+substitutions:
+  name: damperctrl
+  friendly_name: Damper Control
+
+esphome:
+  platform: ESP8266
+  board: d1_mini
+  name: "${name}"
+  # Automatically add the mac address to the name
+  # so you can use a single firmware for all devices
+  name_add_mac_suffix: true
+
+  # This will allow for (future) project identification,
+  # configuration and updates.
+  project:
+    name: esphome.damperctrl
+    version: "0.1"
+  
+  # Home the damper at startup
+  on_boot:
+    then:
+      - light.turn_off: 
+          id: led    
+      # Move 150 steps forward
+      - delay: 5s
+      - stepper.set_speed:
+          id: my_stepper
+          speed: 200   
+      - stepper.report_position:
+          id: my_stepper
+          position: 0
+      - stepper.set_target:
+          id: my_stepper
+          target: -800
+      - delay: 10s
+      - stepper.report_position:
+          id: my_stepper
+          position: 0
+      - stepper.set_speed:
+          id: my_stepper
+          speed: 100   
+      - stepper.set_target:
+          id: my_stepper
+          target: 500
+      - delay: 10s
+      - light.turn_on: 
+          id: led
+          effect: "Slow Pulse"              
+        
+# This should point to the public location of this yaml file.
+dashboard_import:
+  package_import_url: github://jonnywifi/damperctrl/blob/master/damperctrl.yml
+
+# Enable logging
+logger:
+
+# Enable OTA upgrade
+ota:
+
+# Insert your SSID and Your PWD after inital setup
+wifi:
+# networks:
+#    - ssid: 'REPLACEME'          # Enter your WiFi SSID here. Example: `ssid: 'your_network_name'`
+#      password: 'REPLACEME'      # Enter your wifi password here. Example: `password: 'abcde123456'`
+  ap:
+    ssid: ${name}
+    password: "12345678"
+
+captive_portal:
+
+# Enable Home Assistant API
+api:
+  services:
+    - service: "vent_open_pcnt"
+      variables:
+        target: int
+        speed: int
+      then:
+        - light.turn_on: 
+            id: led
+            effect: none
+        - light.turn_off: 
+            id: led 
+        - delay: 1s
+        - stepper.set_speed:
+            id: my_stepper
+            speed: !lambda 'return speed;'
+        - stepper.set_target:
+            id: my_stepper
+            target: !lambda 'return target * 5;'
+        - delay: 10s
+        - light.turn_on: 
+            id: led
+            effect: "Slow Pulse"    
+            
+    - service: "vent_reset_home"
+      variables:
+        state: bool
+      then:
+        - light.turn_off: 
+            id: led    
+        - stepper.report_position:
+            id: my_stepper
+            position: 0
+        - stepper.set_target:
+            id: my_stepper
+            target: 0            
+        - delay: 5s
+        - light.turn_on: 
+            id: led
+            effect: "Slow Pulse"    
+            
+stepper:
+  - platform: a4988
+    id: my_stepper
+    step_pin: GPIO1
+    dir_pin: GPIO3
+    max_speed: 300 steps/s
+
+    # Optional:
+    sleep_pin: D5
+    acceleration: 2000.0
+    deceleration: 2000.0
+
+
+switch:
+  - platform: gpio
+    pin:
+      number: D5
+      inverted: false
+    id: stepper_sleep
+    name: Status Sleep B
+#    restore_mode: RESTORE_DEFAULT_ON
+    
+  # - platform: gpio
+  #   pin:
+  #     number: GPIO1
+  #     inverted: false
+  #   id: status
+  #   name: Status Step A
+    
+  - platform: gpio
+    pin:
+      number: D4
+      inverted: true
+    id: esp_onboard_led
+    name: Onboard Blue
+#    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
+    pin:
+      number: D2
+      inverted: false
+    id: stepper_m0
+#    name: Stepper M0
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
+    pin:
+      number: D1
+      inverted: false
+    id: stepper_m1
+#    name: Stepper M1
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: template
+    name: "Flash Blue LED"
+    optimistic: yes
+    id: pulseFlasher
+    turn_on_action:
+    - while:
+        condition:
+          lambda: 'return true;'
+        then:
+        - switch.turn_on: esp_onboard_led
+        - delay: 500ms 
+        - switch.turn_off: esp_onboard_led
+        - delay: 500ms
+    turn_off_action:
+    - switch.turn_off: esp_onboard_led
+
+output:
+  - platform: esp8266_pwm
+    pin: GPIO1
+    frequency: 1000 Hz
+    id: led_gpio
+    
+light:
+  - platform: monochromatic
+    name: "Heartbeat LED"
+    id: led
+    output: led_gpio
+    effects:
+    - pulse:
+    - pulse:
+        name: "Fast Pulse"
+        transition_length: 0.5s
+        update_interval: 0.5s
+    - pulse:
+        name: "Slow Pulse"
+        transition_length: 2s      # defaults to 1s
+        update_interval: 5s    
+
+text_sensor:
+  - platform: template
+    name: Uptime Human Readable
+    id: uptime_human
+    icon: mdi:clock-start
+    
+sensor:
+  - platform: uptime
+    name: Uptime Sensor
+    id: uptime_sensor
+    update_interval: 60s
+    on_raw_value:
+      then:
+        - text_sensor.template.publish:
+            id: uptime_human
+            state: !lambda |-
+              int seconds = round(id(uptime_sensor).raw_state);
+              int days = seconds / (24 * 3600);
+              seconds = seconds % (24 * 3600);
+              int hours = seconds / 3600;
+              seconds = seconds % 3600;
+              int minutes = seconds /  60;
+              seconds = seconds % 60;
+              return (
+                (days ? to_string(days) + "d " : "") +
+                (hours ? to_string(hours) + "h " : "") +
+                (minutes ? to_string(minutes) + "m " : "") +
+                (to_string(seconds) + "s")
+              ).c_str();
+              
