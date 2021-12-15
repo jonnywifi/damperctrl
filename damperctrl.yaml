@@ -91,8 +91,13 @@ api:
         - delay: 10s
         - light.turn_on: 
             id: led
-            effect: "Slow Pulse"    
-            
+            effect: !lambda |-
+              if ( target > 30 ) {
+                return "Slow Pulse";
+              }else {
+                return "Fast Pulse";
+              }
+                
     - service: "vent_reset_home"
       variables:
         state: bool
