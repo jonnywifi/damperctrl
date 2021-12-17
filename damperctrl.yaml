@@ -50,7 +50,7 @@ esphome:
         
 # This should point to the public location of this yaml file.
 dashboard_import:
-  package_import_url: github://jonnywifi/damperctrl/blob/master/damperctrl.yml
+  package_import_url: github://jonnywifi/damperctrl/damperctrl.yml
 
 # Enable logging
 logger:
