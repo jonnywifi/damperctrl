@@ -15,7 +15,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.2"
+    version: "0.3"
   
   # Home the damper at startup
   on_boot:
@@ -209,13 +209,13 @@ light:
 
 text_sensor:
   - platform: template
-    name: Uptime Human Readable
+    name: ${name} Uptime Human Readable
     id: uptime_human
     icon: mdi:clock-start
     
 sensor:
   - platform: uptime
-    name: Uptime Sensor
+    name: ${name} Uptime Sensor
     id: uptime_sensor
     update_interval: 60s
     on_raw_value:
