@@ -46,6 +46,7 @@ esphome:
       - delay: 10s
       - light.turn_on: 
           id: led
+          brightness: 0.5
           effect: "Slow Pulse"              
         
 # This should point to the public location of this yaml file.
@@ -79,6 +80,7 @@ api:
       then:
         - light.turn_on: 
             id: led
+            brightness: 0.5
             effect: none
         - light.turn_off: 
             id: led 
@@ -114,6 +116,7 @@ api:
         - delay: 5s
         - light.turn_on: 
             id: led
+            brightness: 0.5
             effect: "Slow Pulse"    
             
 stepper:
