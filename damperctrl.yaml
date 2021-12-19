@@ -94,6 +94,7 @@ api:
         - delay: 10s
         - light.turn_on: 
             id: led
+            brightness: 0.5
             effect: !lambda |-
               if ( target > 30 ) {
                 return "Slow Pulse";
