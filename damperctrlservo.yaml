@@ -1,0 +1,223 @@
+substitutions:
+  name: damperctrlservo
+  friendly_name: Damper Control Servo
+  maxbrightness: "0.5"
+
+esphome:
+  platform: ESP8266
+  board: wio_node
+  name: "${name}"
+  # Automatically add the mac address to the name
+  # so you can use a single firmware for all devices
+  # name_add_mac_suffix: true
+
+  # This will allow for (future) project identification,
+  # configuration and updates.
+  project:
+    name: esphome.damperctrlservo
+    version: "0.1"
+  
+  # Home the damper at startup
+  on_boot:
+    then:
+      - light.turn_off: 
+          id: led    
+      # Move 150 steps forward
+      - delay: 5s
+      # - stepper.set_speed:
+      #     id: my_stepper
+      #     speed: 200   
+      # - stepper.report_position:
+      #     id: my_stepper
+      #     position: 0
+      # - stepper.set_target:
+      #     id: my_stepper
+      #     target: -800
+      # - delay: 10s
+      # - stepper.report_position:
+      #     id: my_stepper
+      #     position: 0
+      # - stepper.set_speed:
+      #     id: my_stepper
+      #     speed: 100   
+      - servo.write:
+          id: my_servo
+          level: 1
+      - delay: 10s
+      - light.turn_on: 
+          id: led
+          brightness: ${maxbrightness}
+          effect: "Slow Pulse"              
+        
+# This should point to the public location of this yaml file.
+dashboard_import:
+  package_import_url: github://jonnywifi/damperctrl/damperctrlservo.yaml
+
+# Enable logging
+logger:
+
+# Enable OTA upgrade
+ota:
+
+# Insert your SSID and Your PWD after inital setup
+wifi:
+# networks:
+#    - ssid: 'REPLACEME'          # Enter your WiFi SSID here. Example: `ssid: 'your_network_name'`
+#      password: 'REPLACEME'      # Enter your wifi password here. Example: `password: 'abcde123456'`
+  ap:
+    ssid: ${name}
+    password: "12345678"
+
+captive_portal:
+
+# Enable Home Assistant API
+api:
+  services:
+    - service: "vent_open_pcnt"
+      variables:
+        target: int
+        speed: int
+      then:
+        - light.turn_on: 
+            id: led
+            brightness: ${maxbrightness}
+            effect: none
+        - light.turn_off: 
+            id: led 
+        - delay: 1s
+        - servo.write:
+        #     id: my_servo
+        #     speed: !lambda 'return speed;'
+        # - servo.set_level:
+            id: my_servo
+            level: !lambda 'return target * -1;'
+        - delay: 10s
+        - light.turn_on: 
+            id: led
+            brightness: ${maxbrightness}
+            effect: !lambda |-
+              if ( target > 30 ) {
+                return "Slow Pulse";
+              }else {
+                return "Fast Pulse";
+              }
+                
+    # - service: "vent_reset_home"
+    #   variables:
+    #     state: bool
+    #   then:
+    #     - light.turn_off: 
+    #         id: led    
+    #     - stepper.report_position:
+    #         id: my_stepper
+    #         position: 0
+    #     - stepper.set_target:
+    #         id: my_stepper
+    #         target: 0            
+    #     - delay: 5s
+    #     - light.turn_on: 
+    #         id: led
+    #         brightness: ${maxbrightness}
+    #         effect: "Slow Pulse"    
+            
+# Example configuration entry
+servo:
+  - id: my_servo
+    output: pwm_servo
+    auto_detach_time: 1s
+    transition_length: 5s
+    # min_level: 0%
+    # max_level: 90%
+    # idle_level: 10%
+
+switch:
+  - platform: gpio
+    pin:
+      number: GPIO15
+      inverted: false
+    id: grove_power
+    name: Grove Power
+    restore_mode: RESTORE_DEFAULT_ON
+  
+  # - platform: gpio
+  #   pin:
+  #     number: GPIO1
+  #     inverted: true
+  #   id: esp_onboard_led
+  #   name: Onboard Blue
+#    restore_mode: RESTORE_DEFAULT_OFF
+
+  # - platform: template
+  #   name: "Flash Blue LED"
+  #   optimistic: yes
+  #   id: pulseFlasher
+  #   turn_on_action:
+  #   - while:
+  #       condition:
+  #         lambda: 'return true;'
+  #       then:
+  #       - switch.turn_on: esp_onboard_led
+  #       - delay: 500ms 
+  #       - switch.turn_off: esp_onboard_led
+  #       - delay: 500ms
+  #   turn_off_action:
+  #   - switch.turn_off: esp_onboard_led
+
+output:
+  - platform: esp8266_pwm
+    pin: GPIO1
+    frequency: 1000 Hz
+    id: led_gpio
+    inverted: true
+
+  - platform: esp8266_pwm
+    id: pwm_servo
+    pin: GPIO4
+    frequency: 50 Hz
+    
+light:
+  - platform: monochromatic
+    name: "Heartbeat LED"
+    id: led
+    output: led_gpio
+    effects:
+    - pulse:
+    - pulse:
+        name: "Fast Pulse"
+        transition_length: 0.5s
+        update_interval: 0.5s
+    - pulse:
+        name: "Slow Pulse"
+        transition_length: 2s      # defaults to 1s
+        update_interval: 5s    
+
+text_sensor:
+  - platform: template
+    name: ${name} Uptime Human Readable
+    id: uptime_human
+    icon: mdi:clock-start
+    
+sensor:
+  - platform: uptime
+    name: ${name} Uptime Sensor
+    id: uptime_sensor
+    update_interval: 60s
+    on_raw_value:
+      then:
+        - text_sensor.template.publish:
+            id: uptime_human
+            state: !lambda |-
+              int seconds = round(id(uptime_sensor).raw_state);
+              int days = seconds / (24 * 3600);
+              seconds = seconds % (24 * 3600);
+              int hours = seconds / 3600;
+              seconds = seconds % 3600;
+              int minutes = seconds /  60;
+              seconds = seconds % 60;
+              return (
+                (days ? to_string(days) + "d " : "") +
+                (hours ? to_string(hours) + "h " : "") +
+                (minutes ? to_string(minutes) + "m " : "") +
+                (to_string(seconds) + "s")
+              ).c_str();
+              
