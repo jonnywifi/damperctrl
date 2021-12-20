@@ -15,7 +15,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrlservo
-    version: "0.1"
+    version: "0.2"
   
   # Home the damper at startup
   on_boot:
@@ -165,14 +165,14 @@ switch:
 
 output:
   - platform: esp8266_pwm
-    pin: GPIO1
+    pin: GPIO2
     frequency: 1000 Hz
     id: led_gpio
     inverted: true
 
   - platform: esp8266_pwm
     id: pwm_servo
-    pin: GPIO4
+    pin: GPIO5
     frequency: 50 Hz
     
 light:
