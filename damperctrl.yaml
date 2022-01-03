@@ -2,7 +2,7 @@
 substitutions:
   name: damperctrl
   friendly_name: Damper Control
-  maxbrightness: 0.3
+  maxbrightness: "0.3"
 
 esphome:
   platform: ESP8266
@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.7"
+    version: "0.8"
   
   # Home the damper at startup
   on_boot:
