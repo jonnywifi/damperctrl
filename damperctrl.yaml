@@ -15,7 +15,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.10"
+    version: "0.11"
   
   # Home the damper at startup
   on_boot:
