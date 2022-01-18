@@ -3,6 +3,7 @@ substitutions:
   friendly_name: Damper Control
   maxbrightness: "50%"
 
+
 esphome:
   platform: ESP8266
   board: d1_mini
@@ -15,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.11"
+    version: "0.12"
   
   # Home the damper at startup
   on_boot:
@@ -192,7 +193,7 @@ switch:
         - delay: 3s
         - light.turn_off:
             id: activity_led
-            transition_length: 2s
+#             transition_length: 2s
         - delay: 3s
     turn_off_action:
     - light.turn_off: activity_led
