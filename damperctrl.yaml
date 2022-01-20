@@ -16,14 +16,13 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.12"
+    version: "0.13"
   
   # Home the damper at startup
   on_boot:
     then:
-      - light.turn_on: 
+      - light.turn_off: 
           id: activity_led
-          effect: "Fast Pulse"
       # Move 150 steps forward
       - delay: 5s
       - stepper.set_speed:
@@ -96,15 +95,8 @@ api:
             id: my_stepper
             target: !lambda 'return target * 5;'
         - delay: 10s
-        - light.turn_on: 
-            id: activity_led
-            brightness: ${maxbrightness}
-            effect: !lambda |-
-              if ( target > 30 ) {
-                return "Slow Pulse";
-              }else {
-                return "Fast Pulse";
-              }
+      - switch.turn_on:
+          id: pulseFlasher
                 
     - service: "vent_reset_home"
       variables:
