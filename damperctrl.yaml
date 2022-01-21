@@ -1,8 +1,7 @@
 substitutions:
   name: damperctrl
   friendly_name: Damper Control
-  maxbrightness: "50%"
-
+  maxbrightness: "0.5"
 
 esphome:
   platform: ESP8266
@@ -16,7 +15,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.13"
+    version: "0.14"
   
   # Home the damper at startup
   on_boot:
@@ -44,9 +43,9 @@ esphome:
       - stepper.set_target:
           id: my_stepper
           target: 500
-      - delay: 10s
+      - delay: 5s
       - switch.turn_on:
-          id: pulseFlasher
+          id: SlowBreathing
 #       - light.turn_on: 
 #           id: led
 #           brightness: ${maxbrightness}
@@ -81,10 +80,10 @@ api:
         target: int
         speed: int
       then:
-        - light.turn_on: 
-            id: activity_led
-            brightness: ${maxbrightness}
-            effect: none
+#         - light.turn_on: 
+#             id: activity_led
+#             brightness: ${maxbrightness}
+#         - delay: 1s
         - light.turn_off: 
             id: activity_led 
         - delay: 1s
@@ -94,27 +93,30 @@ api:
         - stepper.set_target:
             id: my_stepper
             target: !lambda 'return target * 5;'
-        - delay: 10s
-      - switch.turn_on:
-          id: pulseFlasher
-                
-    - service: "vent_reset_home"
-      variables:
-        state: bool
-      then:
-        - light.turn_off: 
-            id: activity_led    
-        - stepper.report_position:
-            id: my_stepper
-            position: 0
-        - stepper.set_target:
-            id: my_stepper
-            target: 0            
         - delay: 5s
-        - light.turn_on: 
-            id: activity_led
-            brightness: ${maxbrightness}
-            effect: "Slow Pulse"    
+        - switch.turn_on:
+            id: !lambda |-
+              if ( target > 30 ) {
+                return "SlowBreathing";
+              }else {
+                return "FastBreathing";
+              }          
+                
+#     - service: "vent_reset_home"
+#       variables:
+#         state: bool
+#       then:
+#         - light.turn_off: 
+#             id: activity_led    
+#         - stepper.report_position:
+#             id: my_stepper
+#             position: 0
+#         - stepper.set_target:
+#             id: my_stepper
+#             target: 0            
+#         - delay: 5s
+#         - light.turn_on: 
+#             id: SlowBreathing
             
 stepper:
   - platform: a4988
@@ -170,9 +172,9 @@ switch:
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: template
-    name: "Flash Orange LED"
+    name: "Flash Orange LED Slow"
     optimistic: yes
-    id: pulseFlasher
+    id: SlowBreathing
     turn_on_action:
     - while:
         condition:
@@ -190,6 +192,27 @@ switch:
     turn_off_action:
     - light.turn_off: activity_led
 
+  - platform: template
+    name: "Flash Orange LED Fast"
+    optimistic: yes
+    id: FastBreathing
+    turn_on_action:
+    - while:
+        condition:
+          lambda: 'return true;'
+        then:
+        - light.turn_on: 
+            id: activity_led
+            brightness: ${maxbrightness}
+            transition_length: 500ms
+#             effect: none
+        - delay: 1s
+        - light.turn_off:
+            id: activity_led
+        - delay: 1s
+    turn_off_action:
+    - light.turn_off: activity_led
+
 output:
   - platform: esp8266_pwm
     pin: GPIO1
@@ -198,19 +221,19 @@ output:
     
 light:
   - platform: monochromatic
-    name: "Heartbeat LED"
+    name: "Damper Activity LED"
     id: activity_led
     output: led_gpio
-    effects:
-    - pulse:
-    - pulse:
-        name: "Fast Pulse"
-        transition_length: 0.5s
-        update_interval: 0.5s
-    - pulse:
-        name: "Slow Pulse"
-        transition_length: 2s      # defaults to 1s
-        update_interval: 5s    
+#     effects:
+#     - pulse:
+#     - pulse:
+#         name: "Fast Pulse"
+#         transition_length: 0.5s
+#         update_interval: 0.5s
+#     - pulse:
+#         name: "Slow Pulse"
+#         transition_length: 2s      # defaults to 1s
+#         update_interval: 5s    
 
 text_sensor:
   - platform: template
