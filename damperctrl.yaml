@@ -95,12 +95,13 @@ api:
             target: !lambda 'return target * 5;'
         - delay: 5s
         - switch.turn_on:
-            id: !lambda |-
-              if ( target > 30 ) {
-                return "SlowBreathing";
-              }else {
-                return "FastBreathing";
-              }          
+            id: SlowBreathing
+#             id: !lambda |-
+#               if ( target > 30 ) {
+#                 return "SlowBreathing";
+#               }else {
+#                 return "FastBreathing";
+#               }          
                 
 #     - service: "vent_reset_home"
 #       variables:
