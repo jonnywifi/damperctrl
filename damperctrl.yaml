@@ -1,7 +1,8 @@
 substitutions:
   name: damperctrl
   friendly_name: Damper Control
-  maxbrightness: "0.5"
+#   maxbrightness: "0.5"
+  maxbrightness: "0.0"
 
 esphome:
   platform: ESP8266
@@ -15,13 +16,13 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.14"
+    version: "0.15"
   
   # Home the damper at startup
   on_boot:
     then:
-      - light.turn_off: 
-          id: activity_led
+#       - light.turn_off: 
+#           id: activity_led
       # Move 150 steps forward
       - delay: 5s
       - stepper.set_speed:
@@ -43,9 +44,9 @@ esphome:
       - stepper.set_target:
           id: my_stepper
           target: 500
-      - delay: 5s
-      - switch.turn_on:
-          id: SlowBreathing
+#       - delay: 5s
+#       - switch.turn_on:
+#           id: SlowBreathing
 #       - light.turn_on: 
 #           id: led
 #           brightness: ${maxbrightness}
@@ -84,18 +85,18 @@ api:
 #             id: activity_led
 #             brightness: ${maxbrightness}
 #         - delay: 1s
-        - light.turn_off: 
-            id: activity_led 
-        - delay: 1s
+#         - light.turn_off: 
+#             id: activity_led 
+#         - delay: 1s
         - stepper.set_speed:
             id: my_stepper
             speed: !lambda 'return speed;'
         - stepper.set_target:
             id: my_stepper
             target: !lambda 'return target * 5;'
-        - delay: 5s
-        - switch.turn_on:
-            id: SlowBreathing
+#         - delay: 10s
+#         - switch.turn_on:
+#             id: SlowBreathing
 #             id: !lambda |-
 #               if ( target > 30 ) {
 #                 return "SlowBreathing";
@@ -118,7 +119,26 @@ api:
 #         - delay: 5s
 #         - light.turn_on: 
 #             id: SlowBreathing
-            
+#     - service: "orange_led_state"
+#       variables:
+#         state: bool
+#         brightness: int
+#         rate: int
+#       then:
+#          - light.turn_on: 
+#              id: activity_led
+#              brightness: !lambda 'return brightness;'
+             
+#              brightness: ${maxbrightness}
+# #         - delay: 1s
+#         - light.turn_off: 
+#             id: activity_led 
+#         - delay: 1s
+#         - stepper.set_speed:
+#             id: my_stepper
+#             speed: !lambda 'return speed;'
+
+
 stepper:
   - platform: a4988
     id: my_stepper
@@ -148,12 +168,12 @@ switch:
   #   id: status
   #   name: Status Step A
     
-  - platform: gpio
-    pin:
-      number: D4
-      inverted: true
-    id: esp_onboard_led
-    name: Onboard Blue
+#   - platform: gpio
+#     pin:
+#       number: D4
+#       inverted: true
+#     id: esp_onboard_led
+#     name: Onboard Blue
 #    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
@@ -172,47 +192,47 @@ switch:
 #    name: Stepper M1
     restore_mode: RESTORE_DEFAULT_OFF
 
-  - platform: template
-    name: "Flash Orange LED Slow"
-    optimistic: yes
-    id: SlowBreathing
-    turn_on_action:
-    - while:
-        condition:
-          lambda: 'return true;'
-        then:
-        - light.turn_on: 
-            id: activity_led
-            brightness: ${maxbrightness}
-            effect: none
-        - delay: 3s
-        - light.turn_off:
-            id: activity_led
-#             transition_length: 2s
-        - delay: 3s
-    turn_off_action:
-    - light.turn_off: activity_led
-
-  - platform: template
-    name: "Flash Orange LED Fast"
-    optimistic: yes
-    id: FastBreathing
-    turn_on_action:
-    - while:
-        condition:
-          lambda: 'return true;'
-        then:
-        - light.turn_on: 
-            id: activity_led
-            brightness: ${maxbrightness}
-            transition_length: 500ms
+#   - platform: template
+#     name: "Flash Orange LED Slow"
+#     optimistic: yes
+#     id: SlowBreathing
+#     turn_on_action:
+#     - while:
+#         condition:
+#           lambda: 'return true;'
+#         then:
+#         - light.turn_on: 
+#             id: activity_led
+#             brightness: ${maxbrightness}
 #             effect: none
-        - delay: 1s
-        - light.turn_off:
-            id: activity_led
-        - delay: 1s
-    turn_off_action:
-    - light.turn_off: activity_led
+#         - delay: 3s
+#         - light.turn_off:
+#             id: activity_led
+# #             transition_length: 2s
+#         - delay: 3s
+#     turn_off_action:
+#     - light.turn_off: activity_led
+
+#   - platform: template
+#     name: "Flash Orange LED Fast"
+#     optimistic: yes
+#     id: FastBreathing
+#     turn_on_action:
+#     - while:
+#         condition:
+#           lambda: 'return true;'
+#         then:
+#         - light.turn_on: 
+#             id: activity_led
+#             brightness: ${maxbrightness}
+#             transition_length: 500ms
+# #             effect: none
+#         - delay: 1s
+#         - light.turn_off:
+#             id: activity_led
+#         - delay: 1s
+#     turn_off_action:
+#     - light.turn_off: activity_led
 
 output:
   - platform: esp8266_pwm
@@ -220,11 +240,12 @@ output:
     frequency: 1000 Hz
     id: led_gpio
     
-light:
-  - platform: monochromatic
-    name: "Damper Activity LED"
-    id: activity_led
-    output: led_gpio
+# light:
+#   - platform: monochromatic
+#     name: "Damper Activity LED"
+#     id: activity_led
+#     output: led_gpio
+###
 #     effects:
 #     - pulse:
 #     - pulse:
