@@ -9,7 +9,7 @@ esphome:
   name_add_mac_suffix: true
   project:
     name: esphome.booster-fan-control
-    version: "0.1"
+    version: "0.2"
   # Home the damper at startup
 #   on_boot:
 #     then:
@@ -48,7 +48,7 @@ esp8266:
   board: d1_mini
   
 dashboard_import:
-  package_import_url: github://jonnywifi/damperctrl/boosterfancontrol.yaml
+  package_import_url: github://jonnywifi/damperctrl/booster-fan-control.yaml
   
 # Enable logging
 logger:
