@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.16"
+    version: "0.17"
   
   # Home the damper at startup
   on_boot:
@@ -155,7 +155,7 @@ stepper:
 switch:
   - platform: gpio
     pin:
-      number: D5
+      number: GPIO14
       inverted: false
       allow_other_uses: true
     id: stepper_sleep
@@ -179,7 +179,7 @@ switch:
 
   - platform: gpio
     pin:
-      number: D2
+      number: GPIO4
       inverted: false
     id: stepper_m0
 #    name: Stepper M0
@@ -187,7 +187,7 @@ switch:
 
   - platform: gpio
     pin:
-      number: D1
+      number: GPIO5
       inverted: false
     id: stepper_m1
 #    name: Stepper M1
@@ -238,6 +238,7 @@ switch:
 output:
   - platform: esp8266_pwm
     pin: GPIO1
+      allow_other_uses: true
     frequency: 1000 Hz
     id: led_gpio
     
