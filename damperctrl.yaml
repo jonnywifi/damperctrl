@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.19"
+    version: "0.20"
   
   # Home the damper at startup
   on_boot:
@@ -147,6 +147,7 @@ stepper:
     max_speed: 300 steps/s
     # Optional:
     sleep_pin: GPIO14
+      allow_other_uses: true
     acceleration: 2000.0
     deceleration: 2000.0
 
