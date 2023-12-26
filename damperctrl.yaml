@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.17"
+    version: "0.18"
   
   # Home the damper at startup
   on_boot:
@@ -145,19 +145,25 @@ stepper:
     step_pin: GPIO1
     dir_pin: GPIO3
     max_speed: 300 steps/s
-
     # Optional:
     sleep_pin: GPIO14
     acceleration: 2000.0
     deceleration: 2000.0
 
+# # Control the LED on a shared GPIO when stepper is sleeping
+# output:
+#   - platform: esp8266_pwm
+#     pin: GPIO1
+#       allow_other_uses: true
+#     frequency: 1000 Hz
+#     id: led_gpio
 
 switch:
   - platform: gpio
     pin:
       number: GPIO14
       inverted: false
-      allow_other_uses: true
+      # allow_other_uses: true
     id: stepper_sleep
     name: Status Sleep B
 #    restore_mode: RESTORE_DEFAULT_ON
@@ -235,13 +241,6 @@ switch:
 #     turn_off_action:
 #     - light.turn_off: activity_led
 
-output:
-  - platform: esp8266_pwm
-    pin: GPIO1
-      allow_other_uses: true
-    frequency: 1000 Hz
-    id: led_gpio
-    
 # light:
 #   - platform: monochromatic
 #     name: "Damper Activity LED"
