@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.18"
+    version: "0.19"
   
   # Home the damper at startup
   on_boot:
@@ -163,7 +163,7 @@ switch:
     pin:
       number: GPIO14
       inverted: false
-      # allow_other_uses: true
+      allow_other_uses: true
     id: stepper_sleep
     name: Status Sleep B
 #    restore_mode: RESTORE_DEFAULT_ON
