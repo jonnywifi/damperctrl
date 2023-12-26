@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.20"
+    version: "0.21"
   
   # Home the damper at startup
   on_boot:
@@ -159,14 +159,14 @@ stepper:
 #     frequency: 1000 Hz
 #     id: led_gpio
 
-switch:
-  - platform: gpio
-    pin:
-      number: GPIO14
-      inverted: false
-      allow_other_uses: true
-    id: stepper_sleep
-    name: Status Sleep B
+# switch:
+#   - platform: gpio
+#     pin:
+#       number: GPIO14
+#       inverted: false
+#       allow_other_uses: true
+#     id: stepper_sleep
+#     name: Status Sleep B
 #    restore_mode: RESTORE_DEFAULT_ON
     
   # - platform: gpio
