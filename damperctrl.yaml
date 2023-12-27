@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.21"
+    version: "0.23"
   
   # Home the damper at startup
   on_boot:
@@ -143,13 +143,13 @@ stepper:
   - platform: a4988
     id: my_stepper
     step_pin: GPIO1
-      allow_other_uses : true
+      # allow_other_uses : true
     dir_pin: GPIO3
-      allow_other_uses : true
+      # allow_other_uses : true
     max_speed: 300 steps/s
     # Optional:
     sleep_pin: GPIO14
-      allow_other_uses: true
+      # allow_other_uses: true
     acceleration: 2000.0
     deceleration: 2000.0
 
