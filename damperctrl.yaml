@@ -16,7 +16,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.23"
+    version: "0.24"
   
   # Home the damper at startup
   on_boot:
@@ -143,13 +143,9 @@ stepper:
   - platform: a4988
     id: my_stepper
     step_pin: GPIO1
-      # allow_other_uses : true
     dir_pin: GPIO3
-      # allow_other_uses : true
     max_speed: 300 steps/s
-    # Optional:
     sleep_pin: GPIO14
-      # allow_other_uses: true
     acceleration: 2000.0
     deceleration: 2000.0
 
@@ -186,23 +182,23 @@ stepper:
 #     name: Onboard Blue
 #    restore_mode: RESTORE_DEFAULT_OFF
 
-  - platform: gpio
-    pin:
-      number: GPIO4
-      inverted: false
-      allow_other_uses : true
-    id: stepper_m0
-#    name: Stepper M0
-    restore_mode: RESTORE_DEFAULT_OFF
+#   - platform: gpio
+#     pin:
+#       number: GPIO4
+#       inverted: false
+#       allow_other_uses : true
+#     id: stepper_m0
+# #    name: Stepper M0
+#     restore_mode: RESTORE_DEFAULT_OFF
 
-  - platform: gpio
-    pin:
-      number: GPIO5
-      inverted: false
-      allow_other_uses : true
-    id: stepper_m1
-#    name: Stepper M1
-    restore_mode: RESTORE_DEFAULT_OFF
+#   - platform: gpio
+#     pin:
+#       number: GPIO5
+#       inverted: false
+#       allow_other_uses : true
+#     id: stepper_m1
+# #    name: Stepper M1
+#     restore_mode: RESTORE_DEFAULT_OFF
 
 #   - platform: template
 #     name: "Flash Orange LED Slow"
@@ -263,33 +259,33 @@ stepper:
 #         transition_length: 2s      # defaults to 1s
 #         update_interval: 5s    
 
-text_sensor:
-  - platform: template
-    name: ${name} Uptime Human Readable
-    id: uptime_human
-    icon: mdi:clock-start
+# text_sensor:
+#   - platform: template
+#     name: ${name} Uptime Human Readable
+#     id: uptime_human
+#     icon: mdi:clock-start
     
-sensor:
-  - platform: uptime
-    name: ${name} Uptime Sensor
-    id: uptime_sensor
-    update_interval: 60s
-    on_raw_value:
-      then:
-        - text_sensor.template.publish:
-            id: uptime_human
-            state: !lambda |-
-              int seconds = round(id(uptime_sensor).raw_state);
-              int days = seconds / (24 * 3600);
-              seconds = seconds % (24 * 3600);
-              int hours = seconds / 3600;
-              seconds = seconds % 3600;
-              int minutes = seconds /  60;
-              seconds = seconds % 60;
-              return (
-                (days ? to_string(days) + "d " : "") +
-                (hours ? to_string(hours) + "h " : "") +
-                (minutes ? to_string(minutes) + "m " : "") +
-                (to_string(seconds) + "s")
-              ).c_str();
+# sensor:
+#   - platform: uptime
+#     name: ${name} Uptime Sensor
+#     id: uptime_sensor
+#     update_interval: 60s
+#     on_raw_value:
+#       then:
+#         - text_sensor.template.publish:
+#             id: uptime_human
+#             state: !lambda |-
+#               int seconds = round(id(uptime_sensor).raw_state);
+#               int days = seconds / (24 * 3600);
+#               seconds = seconds % (24 * 3600);
+#               int hours = seconds / 3600;
+#               seconds = seconds % 3600;
+#               int minutes = seconds /  60;
+#               seconds = seconds % 60;
+#               return (
+#                 (days ? to_string(days) + "d " : "") +
+#                 (hours ? to_string(hours) + "h " : "") +
+#                 (minutes ? to_string(minutes) + "m " : "") +
+#                 (to_string(seconds) + "s")
+#               ).c_str();
               
