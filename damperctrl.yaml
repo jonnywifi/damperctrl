@@ -2,33 +2,28 @@ substitutions:
   name: damperctrl
   friendly_name: Damper Control
   location: "Unknown"
-#   maxbrightness: "0.5"
   maxbrightness: "0.0"
+  version: "0.26"
 
 esphome:
   platform: ESP8266
   board: d1_mini
   name: "${name}"
-  # Automatically add the mac address to the name
-  # so you can use a single firmware for all devices
+  # Automatically add the MAC address to the name so you can use a single firmware for all devices
   name_add_mac_suffix: true
 
-  # This will allow for (future) project identification,
-  # configuration and updates.
+  # This allows for project identification, configuration, and updates.
   project:
     name: esphome.damperctrl
-    version: "0.25"
-  
+    version: "${version}"
+
   # Home the damper at startup
   on_boot:
     then:
-#       - light.turn_off: 
-#           id: activity_led
-      # Move 150 steps forward
       - delay: 5s
       - stepper.set_speed:
           id: my_stepper
-          speed: 200   
+          speed: 200
       - stepper.report_position:
           id: my_stepper
           position: 0
@@ -41,19 +36,12 @@ esphome:
           position: 0
       - stepper.set_speed:
           id: my_stepper
-          speed: 100   
+          speed: 100
       - stepper.set_target:
           id: my_stepper
           target: 500
-#       - delay: 5s
-#       - switch.turn_on:
-#           id: SlowBreathing
-#       - light.turn_on: 
-#           id: led
-#           brightness: ${maxbrightness}
-#           effect: "Slow Pulse"              
-        
-# This should point to the public location of this yaml file.
+
+# This should point to the public location of this YAML file.
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml
 
@@ -63,15 +51,13 @@ logger:
 # Enable OTA upgrade
 ota:
 
-# Insert your SSID and Your PWD after inital setup
+# WiFi configuration
 wifi:
-# networks:
-#    - ssid: 'REPLACEME'          # Enter your WiFi SSID here. Example: `ssid: 'your_network_name'`
-#      password: 'REPLACEME'      # Enter your wifi password here. Example: `password: 'abcde123456'`
   ap:
     ssid: ${name}
     password: "12345678"
 
+# Enable captive portal
 captive_portal:
 
 # Enable Home Assistant API
@@ -82,64 +68,14 @@ api:
         target: int
         speed: int
       then:
-#         - light.turn_on: 
-#             id: activity_led
-#             brightness: ${maxbrightness}
-#         - delay: 1s
-#         - light.turn_off: 
-#             id: activity_led 
-#         - delay: 1s
         - stepper.set_speed:
             id: my_stepper
             speed: !lambda 'return speed;'
         - stepper.set_target:
             id: my_stepper
             target: !lambda 'return target * 5;'
-#         - delay: 10s
-#         - switch.turn_on:
-#             id: SlowBreathing
-#             id: !lambda |-
-#               if ( target > 30 ) {
-#                 return "SlowBreathing";
-#               }else {
-#                 return "FastBreathing";
-#               }          
-                
-#     - service: "vent_reset_home"
-#       variables:
-#         state: bool
-#       then:
-#         - light.turn_off: 
-#             id: activity_led    
-#         - stepper.report_position:
-#             id: my_stepper
-#             position: 0
-#         - stepper.set_target:
-#             id: my_stepper
-#             target: 0            
-#         - delay: 5s
-#         - light.turn_on: 
-#             id: SlowBreathing
-#     - service: "orange_led_state"
-#       variables:
-#         state: bool
-#         brightness: int
-#         rate: int
-#       then:
-#          - light.turn_on: 
-#              id: activity_led
-#              brightness: !lambda 'return brightness;'
-             
-#              brightness: ${maxbrightness}
-# #         - delay: 1s
-#         - light.turn_off: 
-#             id: activity_led 
-#         - delay: 1s
-#         - stepper.set_speed:
-#             id: my_stepper
-#             speed: !lambda 'return speed;'
 
-
+# Stepper motor configuration
 stepper:
   - platform: a4988
     id: my_stepper
@@ -150,6 +86,7 @@ stepper:
     acceleration: 2000.0
     deceleration: 2000.0
 
+# Text sensor for location
 text_sensor:
   - platform: template
     name: "${friendly_name} Location"
@@ -158,144 +95,11 @@ text_sensor:
     update_interval: never
     lambda: |-
       return {"${location}"};
-      
-# # Control the LED on a shared GPIO when stepper is sleeping
-# output:
-#   - platform: esp8266_pwm
-#     pin: GPIO1
-#       allow_other_uses: true
-#     frequency: 1000 Hz
-#     id: led_gpio
 
-# switch:
-#   - platform: gpio
-#     pin:
-#       number: GPIO14
-#       inverted: false
-#       allow_other_uses: true
-#     id: stepper_sleep
-#     name: Status Sleep B
-#    restore_mode: RESTORE_DEFAULT_ON
-    
-  # - platform: gpio
-  #   pin:
-  #     number: GPIO1
-  #     inverted: false
-  #   id: status
-  #   name: Status Step A
-    
-#   - platform: gpio
-#     pin:
-#       number: D4
-#       inverted: true
-#     id: esp_onboard_led
-#     name: Onboard Blue
-#    restore_mode: RESTORE_DEFAULT_OFF
-
-#   - platform: gpio
-#     pin:
-#       number: GPIO4
-#       inverted: false
-#       allow_other_uses : true
-#     id: stepper_m0
-# #    name: Stepper M0
-#     restore_mode: RESTORE_DEFAULT_OFF
-
-#   - platform: gpio
-#     pin:
-#       number: GPIO5
-#       inverted: false
-#       allow_other_uses : true
-#     id: stepper_m1
-# #    name: Stepper M1
-#     restore_mode: RESTORE_DEFAULT_OFF
-
-#   - platform: template
-#     name: "Flash Orange LED Slow"
-#     optimistic: yes
-#     id: SlowBreathing
-#     turn_on_action:
-#     - while:
-#         condition:
-#           lambda: 'return true;'
-#         then:
-#         - light.turn_on: 
-#             id: activity_led
-#             brightness: ${maxbrightness}
-#             effect: none
-#         - delay: 3s
-#         - light.turn_off:
-#             id: activity_led
-# #             transition_length: 2s
-#         - delay: 3s
-#     turn_off_action:
-#     - light.turn_off: activity_led
-
-#   - platform: template
-#     name: "Flash Orange LED Fast"
-#     optimistic: yes
-#     id: FastBreathing
-#     turn_on_action:
-#     - while:
-#         condition:
-#           lambda: 'return true;'
-#         then:
-#         - light.turn_on: 
-#             id: activity_led
-#             brightness: ${maxbrightness}
-#             transition_length: 500ms
-# #             effect: none
-#         - delay: 1s
-#         - light.turn_off:
-#             id: activity_led
-#         - delay: 1s
-#     turn_off_action:
-#     - light.turn_off: activity_led
-
-# light:
-#   - platform: monochromatic
-#     name: "Damper Activity LED"
-#     id: activity_led
-#     output: led_gpio
-###
-#     effects:
-#     - pulse:
-#     - pulse:
-#         name: "Fast Pulse"
-#         transition_length: 0.5s
-#         update_interval: 0.5s
-#     - pulse:
-#         name: "Slow Pulse"
-#         transition_length: 2s      # defaults to 1s
-#         update_interval: 5s    
-
-# text_sensor:
-#   - platform: template
-#     name: ${name} Uptime Human Readable
-#     id: uptime_human
-#     icon: mdi:clock-start
-    
-# sensor:
-#   - platform: uptime
-#     name: ${name} Uptime Sensor
-#     id: uptime_sensor
-#     update_interval: 60s
-#     on_raw_value:
-#       then:
-#         - text_sensor.template.publish:
-#             id: uptime_human
-#             state: !lambda |-
-#               int seconds = round(id(uptime_sensor).raw_state);
-#               int days = seconds / (24 * 3600);
-#               seconds = seconds % (24 * 3600);
-#               int hours = seconds / 3600;
-#               seconds = seconds % 3600;
-#               int minutes = seconds /  60;
-#               seconds = seconds % 60;
-#               return (
-#                 (days ? to_string(days) + "d " : "") +
-#                 (hours ? to_string(hours) + "h " : "") +
-#                 (minutes ? to_string(minutes) + "m " : "") +
-#                 (to_string(seconds) + "s")
-#               ).c_str();
-              
+  - platform: template
+    name: "${friendly_name} Version"
+    id: damper_version
+    icon: mdi:tag
+    update_interval: never
+    lambda: |-
+      return {"${version}"};
