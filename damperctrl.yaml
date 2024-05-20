@@ -3,7 +3,7 @@ substitutions:
   friendly_name: Damper Control
   location: "Unknown"
   maxbrightness: "0.0"
-  version: "0.26"
+  version: "0.27"
 
 esphome:
   platform: ESP8266
@@ -43,7 +43,7 @@ esphome:
 
 # This should point to the public location of this YAML file.
 dashboard_import:
-  package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml
+  package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
 
 # Enable logging
 logger:
