@@ -1,6 +1,7 @@
 substitutions:
   name: damperctrl
   friendly_name: Damper Control
+  location: "Unknown"
 #   maxbrightness: "0.5"
   maxbrightness: "0.0"
 
@@ -16,7 +17,7 @@ esphome:
   # configuration and updates.
   project:
     name: esphome.damperctrl
-    version: "0.24"
+    version: "0.25"
   
   # Home the damper at startup
   on_boot:
@@ -149,6 +150,15 @@ stepper:
     acceleration: 2000.0
     deceleration: 2000.0
 
+text_sensor:
+  - platform: template
+    name: "${friendly_name} Location"
+    id: damper_location
+    icon: mdi:map-marker
+    update_interval: never
+    lambda: |-
+      return {"${location}"};
+      
 # # Control the LED on a shared GPIO when stepper is sleeping
 # output:
 #   - platform: esp8266_pwm
