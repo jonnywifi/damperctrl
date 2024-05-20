@@ -1,23 +1,21 @@
 substitutions:
   name: damperctrl
   friendly_name: Damper Control
-  location: "Unknown"
+  location: "--"
+  room: "--"
   maxbrightness: "0.0"
-  version: "0.27"
+  version: "0.28"
 
 esphome:
   platform: ESP8266
   board: d1_mini
   name: "${name}"
-  # Automatically add the MAC address to the name so you can use a single firmware for all devices
   name_add_mac_suffix: true
 
-  # This allows for project identification, configuration, and updates.
   project:
     name: esphome.damperctrl
     version: "${version}"
 
-  # Home the damper at startup
   on_boot:
     then:
       - delay: 5s
@@ -41,26 +39,20 @@ esphome:
           id: my_stepper
           target: 500
 
-# This should point to the public location of this YAML file.
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
 
-# Enable logging
 logger:
 
-# Enable OTA upgrade
 ota:
 
-# WiFi configuration
 wifi:
   ap:
     ssid: ${name}
     password: "12345678"
 
-# Enable captive portal
 captive_portal:
 
-# Enable Home Assistant API
 api:
   services:
     - service: "vent_open_pcnt"
@@ -75,7 +67,6 @@ api:
             id: my_stepper
             target: !lambda 'return target * 5;'
 
-# Stepper motor configuration
 stepper:
   - platform: a4988
     id: my_stepper
@@ -86,7 +77,6 @@ stepper:
     acceleration: 2000.0
     deceleration: 2000.0
 
-# Text sensor for location
 text_sensor:
   - platform: template
     name: "${friendly_name} Location"
@@ -103,3 +93,24 @@ text_sensor:
     update_interval: never
     lambda: |-
       return {"${version}"};
+
+# Number component for percentage control
+number:
+  - platform: template
+    name: "${friendly_name} Percentage"
+    id: damper_percentage
+    icon: mdi:percent
+    min_value: 0
+    max_value: 100
+    step: 1
+    unit_of_measurement: "%"
+    update_interval: 60s
+    set_action:
+      - stepper.set_speed:
+          id: my_stepper
+          speed: 200  # Set a default speed or adjust as needed
+      - stepper.set_target:
+          id: my_stepper
+          target: !lambda 'return (int(x) * 5);'  # Convert percentage to target steps
+      - lambda: |-
+          id(damper_percentage).publish_state(x);  # Update the state
