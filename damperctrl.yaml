@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.30"
+  version: "0.31"
 
 esphome:
   platform: ESP8266
@@ -111,6 +111,6 @@ number:
       - stepper.set_target:
           id: my_stepper
           # Convert percentage to target steps
-          target: !lambda 'return (int(x) * 5);'
+          target: !lambda 'return (int(x) * 100 * 5);'
       - lambda: |-
           id(damper_percentage).publish_state(x);
