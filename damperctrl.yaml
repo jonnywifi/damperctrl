@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.29"
+  version: "0.30"
 
 esphome:
   platform: ESP8266
@@ -94,7 +94,6 @@ text_sensor:
     lambda: |-
       return {"${version}"};
 
-# Number component for percentage control
 number:
   - platform: template
     name: "${friendly_name} Percentage"
@@ -108,9 +107,10 @@ number:
     set_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 200  # Set a default speed or adjust as needed
+          speed: 100  # Set a default speed or adjust as needed
       - stepper.set_target:
           id: my_stepper
-          target: !lambda 'return (int(x) * 5);'  # Convert percentage to target steps
+          # Convert percentage to target steps
+          target: !lambda 'return (int(x) * 5);'
       - lambda: |-
-          id(damper_percentage).publish_state(x);  # Update the state
+          id(damper_percentage).publish_state(x);
