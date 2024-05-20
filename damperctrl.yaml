@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.28"
+  version: "0.29"
 
 esphome:
   platform: ESP8266
