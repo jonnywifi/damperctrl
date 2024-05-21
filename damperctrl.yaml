@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.32"
+  version: "0.33"
 
 esphome:
   platform: ESP8266
@@ -110,8 +110,8 @@ number:
           speed: 500  # Set a default speed or adjust as needed
       - stepper.set_target:
           id: my_stepper
-          target: !lambda 'return (int(x) * 100 * 5);'
           # Convert percentage to target steps
+          target: !lambda 'return (int(x) * 100 * 5);'
       - lambda: |-
           id(damper_percentage).publish_state(x);
 
@@ -124,9 +124,10 @@ switch:
       - stepper.set_speed:
           id: my_stepper
           speed: 300  # Adjust speed as needed
-      - stepper.relative_move:
-          id: my_stepper
-          target: -100  # Adjust the step count as needed
+      - lambda: |-
+          int current_position = id(my_stepper).target;
+          id(my_stepper).set_target(current_position - 100);
+          # Adjust the step count as needed
       - switch.turn_off: open_more
 
   - platform: template
@@ -136,7 +137,8 @@ switch:
       - stepper.set_speed:
           id: my_stepper
           speed: 300  # Adjust speed as needed
-      - stepper.relative_move:
-          id: my_stepper
-          target: 100  # Adjust the step count as needed
+      - lambda: |-
+          int current_position = id(my_stepper).target;
+          id(my_stepper).set_target(current_position + 100);
+          # Adjust the step count as needed
       - switch.turn_off: close_more
