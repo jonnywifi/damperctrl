@@ -107,11 +107,11 @@ number:
     set_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 300  # Set a default speed or adjust as needed
+          speed: 500  # Set a default speed or adjust as needed
       - stepper.set_target:
           id: my_stepper
-          # Convert percentage to target steps
           target: !lambda 'return (int(x) * 100 * 5);'
+          # Convert percentage to target steps
       - lambda: |-
           id(damper_percentage).publish_state(x);
 
