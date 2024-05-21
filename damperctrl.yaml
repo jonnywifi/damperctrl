@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.33"
+  version: "0.34"
 
 esphome:
   platform: ESP8266
@@ -21,11 +21,12 @@ esphome:
       - delay: 5s
       - stepper.set_speed:
           id: my_stepper
-          speed: 200
+          speed: 300
       - stepper.report_position:
           id: my_stepper
           position: 0
       - stepper.set_target:
+        # Make sure the vent is fully closed.  ie., homed
           id: my_stepper
           target: -800
       - delay: 10s
@@ -34,8 +35,9 @@ esphome:
           position: 0
       - stepper.set_speed:
           id: my_stepper
-          speed: 100
+          speed: 300
       - stepper.set_target:
+        # Open vent to the minimum desired position.  This will become 0 percent open.
           id: my_stepper
           target: 500
 
@@ -72,7 +74,7 @@ stepper:
     id: my_stepper
     step_pin: GPIO1
     dir_pin: GPIO3
-    max_speed: 300 steps/s
+    max_speed: 800 steps/s
     sleep_pin: GPIO14
     acceleration: 2000.0
     deceleration: 2000.0
@@ -107,7 +109,7 @@ number:
     set_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 500  # Set a default speed or adjust as needed
+          speed: 800  # Set a default speed or adjust as needed
       - stepper.set_target:
           id: my_stepper
           # Convert percentage to target steps
@@ -123,10 +125,10 @@ switch:
     turn_on_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 300  # Adjust speed as needed
+          speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position - 100);  // Adjust the step count as needed
+          id(my_stepper).set_target(current_position + 100);  // Adjust the step count as needed
       - switch.turn_off: open_more
 
   - platform: template
@@ -135,8 +137,8 @@ switch:
     turn_on_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 300  # Adjust speed as needed
+          speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position + 100);  // Adjust the step count as needed
+          id(my_stepper).set_target(current_position - 100);  // Adjust the step count as needed
       - switch.turn_off: close_more
