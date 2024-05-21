@@ -125,8 +125,8 @@ switch:
           id: my_stepper
           speed: 300  # Adjust speed as needed
       - lambda: |-
-          int current_position = id(my_stepper).target;
-          id(my_stepper).set_target(current_position - 100); // Adjust the step count as needed
+          int current_position = id(my_stepper).get_position();
+          id(my_stepper).set_target(current_position - 100);  // Adjust the step count as needed
       - switch.turn_off: open_more
 
   - platform: template
@@ -137,6 +137,6 @@ switch:
           id: my_stepper
           speed: 300  # Adjust speed as needed
       - lambda: |-
-          int current_position = id(my_stepper).target;
-          id(my_stepper).set_target(current_position + 100); // Adjust the step count as needed
+          int current_position = id(my_stepper).get_position();
+          id(my_stepper).set_target(current_position + 100);  // Adjust the step count as needed
       - switch.turn_off: close_more
