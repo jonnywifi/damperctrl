@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.47"
+  version: "0.48"
 
 esphome:
   platform: ESP8266
@@ -16,12 +16,12 @@ esphome:
     name: esphome.damperctrl
     version: "${version}"
 
-  on_boot:
-    # priority: -10  # Lower priority to prevent blocking
-    then:
-      - delay: 10s
-      - switch.turn_on:
-          id: home_now
+  # on_boot:
+  #   # priority: -10  # Lower priority to prevent blocking
+  #   then:
+  #     - delay: 10s
+  #     - switch.turn_on:
+  #         id: home_now
 
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
