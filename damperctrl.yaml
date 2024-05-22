@@ -49,7 +49,7 @@ logger:
 
 ota:
 
-# wifi:
+wifi:
 #   ssid: !secret wifi_ssid
 #   password: !secret wifi_password
 #   fast_connect: true  # Enable fast connect for quicker connection and reduced overhead
