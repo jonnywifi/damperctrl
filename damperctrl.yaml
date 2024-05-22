@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.34"
+  version: "0.37"
 
 esphome:
   platform: ESP8266
@@ -26,9 +26,8 @@ esphome:
           id: my_stepper
           position: 0
       - stepper.set_target:
-        # Make sure the vent is fully closed.  ie., homed
           id: my_stepper
-          target: -800
+          target: -800  # Make sure the vent is fully closed (homed)
       - delay: 10s
       - stepper.report_position:
           id: my_stepper
@@ -37,9 +36,8 @@ esphome:
           id: my_stepper
           speed: 300
       - stepper.set_target:
-        # Open vent to the minimum desired position.  This will become 0 percent open.
           id: my_stepper
-          target: 500
+          target: 500  # Open vent to the minimum desired position (0% open)
 
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
@@ -79,6 +77,45 @@ stepper:
     acceleration: 2000.0
     deceleration: 2000.0
 
+switch:
+  - platform: template
+    name: "${friendly_name} Open More"
+    id: open_more
+    turn_on_action:
+      - stepper.set_speed:
+          id: my_stepper
+          speed: 800  # Adjust speed as needed
+      - lambda: |-
+          int current_position = id(my_stepper).current_position;
+          id(my_stepper).set_target(current_position + 100);  # Adjust the step count as needed
+      - switch.turn_off: open_more
+
+  - platform: template
+    name: "${friendly_name} Close More"
+    id: close_more
+    turn_on_action:
+      - stepper.set_speed:
+          id: my_stepper
+          speed: 800  # Adjust speed as needed
+      - lambda: |-
+          int current_position = id(my_stepper).current_position;
+          id(my_stepper).set_target(current_position - 100);  # Adjust the step count as needed
+      - switch.turn_off: close_more
+
+  - platform: template
+    name: "${friendly_name} Identify"
+    id: identify
+    turn_on_action:
+      - lambda: |-
+          for (int i = 0; i < 10; i++) {
+            // Toggle GPIO14 for LED and ensure stepper driver is not affected
+            digitalWrite(14, HIGH);  // Turn on LED
+            delay(500);              // Wait 500ms
+            digitalWrite(14, LOW);   // Turn off LED
+            delay(500);              // Wait 500ms
+          }
+      - switch.turn_off: identify
+
 text_sensor:
   - platform: template
     name: "${friendly_name} Location"
@@ -113,32 +150,6 @@ number:
       - stepper.set_target:
           id: my_stepper
           # Convert percentage to target steps
-          target: !lambda 'return (int(x) * 100 * 5);'
+          target: !lambda 'return (int(x) * 10 * 5);'
       - lambda: |-
           id(damper_percentage).publish_state(x);
-
-# Switch components for open more and close more actions
-switch:
-  - platform: template
-    name: "${friendly_name} Open More"
-    id: open_more
-    turn_on_action:
-      - stepper.set_speed:
-          id: my_stepper
-          speed: 800  # Adjust speed as needed
-      - lambda: |-
-          int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position + 100);  // Adjust the step count as needed
-      - switch.turn_off: open_more
-
-  - platform: template
-    name: "${friendly_name} Close More"
-    id: close_more
-    turn_on_action:
-      - stepper.set_speed:
-          id: my_stepper
-          speed: 800  # Adjust speed as needed
-      - lambda: |-
-          int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position - 100);  // Adjust the step count as needed
-      - switch.turn_off: close_more
