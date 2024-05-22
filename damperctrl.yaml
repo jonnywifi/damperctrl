@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.44"
+  version: "0.45"
 
 esphome:
   platform: ESP8266
@@ -71,7 +71,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position + 100);  # Adjust the step count as needed
+          id(my_stepper).set_target(current_position + 100);  // Adjust the step count as needed
       - switch.turn_off: open_more
 
   - platform: template
@@ -83,7 +83,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position - 100);  # Adjust the step count as needed
+          id(my_stepper).set_target(current_position - 100);  // Adjust the step count as needed
       - switch.turn_off: close_more
 
   - platform: template
