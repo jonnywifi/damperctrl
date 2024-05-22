@@ -21,25 +21,6 @@ esphome:
       - delay: 10s
       - switch.turn_on:
           id: home_now
-      # - stepper.set_speed:
-      #     id: my_stepper
-      #     speed: 100
-      # - stepper.report_position:
-      #     id: my_stepper
-      #     position: 0
-      # - stepper.set_target:
-      #     id: my_stepper
-      #     target: -1600  # Make sure the vent is fully closed (homed)
-      # - delay: 10s
-      # - stepper.report_position:
-      #     id: my_stepper
-      #     position: 0
-      # - stepper.set_speed:
-      #     id: my_stepper
-      #     speed: 100
-      # - stepper.set_target:
-      #     id: my_stepper
-      #     target: 500  # Open vent to the minimum desired position (0% open)
 
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
@@ -49,31 +30,26 @@ logger:
 
 ota:
 
-wifi:
-#   ssid: !secret wifi_ssid
-#   password: !secret wifi_password
-#   fast_connect: true  # Enable fast connect for quicker connection and reduced overhead
-
-#   manual_ip:
-#     static_ip: 192.168.1.137  # Set a static IP
-#     gateway: 192.168.1.1
-#     subnet: 255.255.255.0
+# wifi:
+#   ap:
+#     ssid: ${name}
+#     password: "12345678"
 
 api:
   password: !secret api_password
 
-services:
-  - service: "vent_open_pcnt"
-    variables:
-      target: int
-      speed: int
-    then:
-      - stepper.set_speed:
-          id: my_stepper
-          speed: !lambda 'return speed;'
-      - stepper.set_target:
-          id: my_stepper
-          target: !lambda 'return target * 5;'
+  services:
+    - service: "vent_open_pcnt"
+      variables:
+        target: int
+        speed: int
+      then:
+        - stepper.set_speed:
+            id: my_stepper
+            speed: !lambda 'return speed;'
+        - stepper.set_target:
+            id: my_stepper
+            target: !lambda 'return target * 5;'
 
 stepper:
   - platform: a4988
