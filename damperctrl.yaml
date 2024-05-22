@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.39"
+  version: "0.40"
 
 esphome:
   platform: ESP8266
@@ -18,7 +18,7 @@ esphome:
 
   on_boot:
     then:
-      - delay: 5s
+      - delay: 2s
       - stepper.set_speed:
           id: my_stepper
           speed: 800
@@ -27,7 +27,7 @@ esphome:
           position: 0
       - stepper.set_target:
           id: my_stepper
-          target: -800  # Make sure the vent is fully closed (homed)
+          target: -1600  # Make sure the vent is fully closed (homed)
       - delay: 10s
       - stepper.report_position:
           id: my_stepper
