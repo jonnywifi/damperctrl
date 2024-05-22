@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.43"
+  version: "0.44"
 
 esphome:
   platform: ESP8266
@@ -117,8 +117,8 @@ switch:
       - switch.turn_off: identify
 
   - platform: template
-    name: "${friendly_name} Home"
-    id: home
+    name: "${friendly_name} Home Now"
+    id: home_now
     turn_on_action:
       - stepper.set_speed:
           id: my_stepper
@@ -139,7 +139,7 @@ switch:
       - stepper.set_target:
           id: my_stepper
           target: 500  # Open vent to the minimum desired position (0% open)
-      - switch.turn_off: home
+      - switch.turn_off: home_now
 
 text_sensor:
   - platform: template
