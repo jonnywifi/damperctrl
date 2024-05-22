@@ -130,13 +130,13 @@ switch:
     turn_on_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 800
+          speed: 1000
       - stepper.report_position:
           id: my_stepper
           position: 0
       - stepper.set_target:
           id: my_stepper
-          target: -2000  # Make sure the vent is fully closed (homed)
+          target: -4000  # Make sure the vent is fully closed (homed)
       - delay: 10s
       - stepper.report_position:
           id: my_stepper
