@@ -32,8 +32,6 @@ logger:
 ota:
 
 api:
-  password: !secret api_password
-
   services:
     - service: "vent_open_pcnt"
       variables:
