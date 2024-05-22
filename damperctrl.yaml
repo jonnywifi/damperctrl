@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.40"
+  version: "0.41"
 
 esphome:
   platform: ESP8266
@@ -21,7 +21,7 @@ esphome:
       - delay: 2s
       - stepper.set_speed:
           id: my_stepper
-          speed: 800
+          speed: 100
       - stepper.report_position:
           id: my_stepper
           position: 0
@@ -34,7 +34,7 @@ esphome:
           position: 0
       - stepper.set_speed:
           id: my_stepper
-          speed: 300
+          speed: 100
       - stepper.set_target:
           id: my_stepper
           target: 500  # Open vent to the minimum desired position (0% open)
