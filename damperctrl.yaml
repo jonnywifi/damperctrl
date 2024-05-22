@@ -19,53 +19,61 @@ esphome:
   on_boot:
     then:
       - delay: 10s
-      - stepper.set_speed:
-          id: my_stepper
-          speed: 100
-      - stepper.report_position:
-          id: my_stepper
-          position: 0
-      - stepper.set_target:
-          id: my_stepper
-          target: -1600  # Make sure the vent is fully closed (homed)
-      - delay: 10s
-      - stepper.report_position:
-          id: my_stepper
-          position: 0
-      - stepper.set_speed:
-          id: my_stepper
-          speed: 100
-      - stepper.set_target:
-          id: my_stepper
-          target: 500  # Open vent to the minimum desired position (0% open)
+      - switch.turn_on:
+          id: home_now
+      # - stepper.set_speed:
+      #     id: my_stepper
+      #     speed: 100
+      # - stepper.report_position:
+      #     id: my_stepper
+      #     position: 0
+      # - stepper.set_target:
+      #     id: my_stepper
+      #     target: -1600  # Make sure the vent is fully closed (homed)
+      # - delay: 10s
+      # - stepper.report_position:
+      #     id: my_stepper
+      #     position: 0
+      # - stepper.set_speed:
+      #     id: my_stepper
+      #     speed: 100
+      # - stepper.set_target:
+      #     id: my_stepper
+      #     target: 500  # Open vent to the minimum desired position (0% open)
 
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
 
 logger:
+  level: DEBUG  # Enable detailed logging for debugging
 
 ota:
 
-wifi:
-  ap:
-    ssid: ${name}
-    password: "12345678"
+# wifi:
+#   ssid: !secret wifi_ssid
+#   password: !secret wifi_password
+#   fast_connect: true  # Enable fast connect for quicker connection and reduced overhead
 
-captive_portal:
+#   manual_ip:
+#     static_ip: 192.168.1.137  # Set a static IP
+#     gateway: 192.168.1.1
+#     subnet: 255.255.255.0
 
 api:
-  services:
-    - service: "vent_open_pcnt"
-      variables:
-        target: int
-        speed: int
-      then:
-        - stepper.set_speed:
-            id: my_stepper
-            speed: !lambda 'return speed;'
-        - stepper.set_target:
-            id: my_stepper
-            target: !lambda 'return target * 5;'
+  password: !secret api_password
+
+services:
+  - service: "vent_open_pcnt"
+    variables:
+      target: int
+      speed: int
+    then:
+      - stepper.set_speed:
+          id: my_stepper
+          speed: !lambda 'return speed;'
+      - stepper.set_target:
+          id: my_stepper
+          target: !lambda 'return target * 5;'
 
 stepper:
   - platform: a4988
@@ -87,7 +95,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position + 100);  // Adjust the step count as needed
+          id(my_stepper).set_target(current_position + 100);  # Adjust the step count as needed
       - switch.turn_off: open_more
 
   - platform: template
@@ -99,7 +107,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position - 100);  // Adjust the step count as needed
+          id(my_stepper).set_target(current_position - 100);  # Adjust the step count as needed
       - switch.turn_off: close_more
 
   - platform: template
@@ -122,13 +130,13 @@ switch:
     turn_on_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 100
+          speed: 800
       - stepper.report_position:
           id: my_stepper
           position: 0
       - stepper.set_target:
           id: my_stepper
-          target: -1600  # Make sure the vent is fully closed (homed)
+          target: -2000  # Make sure the vent is fully closed (homed)
       - delay: 10s
       - stepper.report_position:
           id: my_stepper
@@ -175,6 +183,6 @@ number:
       - stepper.set_target:
           id: my_stepper
           # Convert percentage to target steps
-          target: !lambda 'return (int(x) * 5 * 5 * 0.9);'
+          target: !lambda 'return (int(x) * 100 * 5);'
       - lambda: |-
           id(damper_percentage).publish_state(x);
