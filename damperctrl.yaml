@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.49"
+  version: "0.50"
 
 esphome:
   platform: ESP8266
@@ -50,10 +50,10 @@ stepper:
     id: my_stepper
     step_pin: GPIO1
     dir_pin: GPIO3
-    max_speed: 800 steps/s
+    max_speed: 1000 steps/s
     sleep_pin: GPIO14
-    acceleration: 2000.0
-    deceleration: 2000.0
+    acceleration: 1000.0
+    deceleration: 1000.0
 
 switch:
   - platform: template
@@ -113,7 +113,7 @@ switch:
           position: 0
       - stepper.set_speed:
           id: my_stepper
-          speed: 100
+          speed: 1000
       - stepper.set_target:
           id: my_stepper
           target: 500  # Open vent to the minimum desired position (0% open)
