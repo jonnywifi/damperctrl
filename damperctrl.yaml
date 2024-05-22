@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.48"
+  version: "0.49"
 
 esphome:
   platform: ESP8266
@@ -27,7 +27,7 @@ dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
 
 logger:
-  level: WARN  # Enable detailed logging for debugging
+  level: DEBUG  # Enable detailed logging for debugging
 
 ota:
 
