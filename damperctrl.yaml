@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.46"
+  version: "0.47"
 
 esphome:
   platform: ESP8266
@@ -17,7 +17,7 @@ esphome:
     version: "${version}"
 
   on_boot:
-    priority: -10  # Lower priority to prevent blocking
+    # priority: -10  # Lower priority to prevent blocking
     then:
       - delay: 10s
       - switch.turn_on:
