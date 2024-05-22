@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.42"
+  version: "0.43"
 
 esphome:
   platform: ESP8266
@@ -115,6 +115,31 @@ switch:
             delay(500);              // Wait 500ms
           }
       - switch.turn_off: identify
+
+  - platform: template
+    name: "${friendly_name} Home"
+    id: home
+    turn_on_action:
+      - stepper.set_speed:
+          id: my_stepper
+          speed: 100
+      - stepper.report_position:
+          id: my_stepper
+          position: 0
+      - stepper.set_target:
+          id: my_stepper
+          target: -1600  # Make sure the vent is fully closed (homed)
+      - delay: 10s
+      - stepper.report_position:
+          id: my_stepper
+          position: 0
+      - stepper.set_speed:
+          id: my_stepper
+          speed: 100
+      - stepper.set_target:
+          id: my_stepper
+          target: 500  # Open vent to the minimum desired position (0% open)
+      - switch.turn_off: home
 
 text_sensor:
   - platform: template
