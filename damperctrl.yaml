@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.56"
+  version: "0.57"
 
 esphome:
   platform: ESP8266
@@ -65,16 +65,16 @@ api:
 
 output:
   - platform: gpio
-    id: gpio3_output
+    id: gpio1_output
     pin:
-      number: GPIO3
+      number: GPIO1
       inverted: true
       allow_other_uses: true
 
 light:
   - platform: binary
-    id: gpio3_light
-    output: gpio3_output
+    id: gpio1_light
+    output: gpio1_output
 
 stepper:
   - platform: a4988
