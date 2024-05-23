@@ -4,8 +4,8 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  max_steps: "2000"
-  codeVer: "0.65"
+  max_steps: "2000"  # Total steps for full range
+  version: "0.66"
 
 esphome:
   platform: ESP8266
@@ -15,10 +15,10 @@ esphome:
 
   project:
     name: esphome.damperctrl
-    version: "${codeVer}"
+    version: "${version}"
 
   on_boot:
-    priority: 620  # Ensure this runs after network initialization
+    priority: 100  # Ensure this runs after network initialization
     then:
       - while:
           condition:
@@ -67,7 +67,10 @@ api:
             speed: !lambda 'return speed;'
         - stepper.set_target:
             id: my_stepper
-            target: !lambda 'return (target * ${max_steps}) / 100;'
+            target: !lambda |-
+              int steps = (target * ${max_steps}) / 100;
+              id(damper_position).publish_state(steps);
+              return steps;
 
 stepper:
   - platform: a4988
@@ -78,6 +81,41 @@ stepper:
     sleep_pin: GPIO14  # Also connected to the blue "Active" LED
     acceleration: 1000.0
     deceleration: 1000.0
+
+sensor:
+  - platform: template
+    name: "${friendly_name} Position"
+    id: damper_position
+    lambda: |-
+      return id(my_stepper).current_position;
+    update_interval: 1s  # Update every second
+
+text_sensor:
+  - platform: template
+    name: "${friendly_name} Location"
+    id: damper_location
+    icon: mdi:map-marker
+    update_interval: 24h
+    lambda: |-
+      return {"${location}"};
+
+  - platform: template
+    name: "${friendly_name} Version"
+    id: damper_version
+    icon: mdi:tag
+    update_interval: 24h
+    lambda: |-
+      return {"${version}"};
+
+  - platform: template
+    name: "${friendly_name} Percentage"
+    id: damper_percentage
+    icon: mdi:percent
+    lambda: |-
+      float position = id(damper_position).state;
+      float percentage = (position / ${max_steps}) * 100;
+      return {String(percentage) + "%"};
+    update_interval: 1s  # Update every second to reflect real-time position
 
 switch:
   - platform: template
@@ -91,6 +129,7 @@ switch:
           int current_position = id(my_stepper).current_position;
           int target_position = current_position + (${max_steps} / 100);  // Move 1% more
           id(my_stepper).set_target(target_position);
+          id(damper_position).publish_state(target_position);
       - switch.turn_off: open_more
 
   - platform: template
@@ -104,6 +143,7 @@ switch:
           int current_position = id(my_stepper).current_position;
           int target_position = current_position - (${max_steps} / 100);  // Move 1% less
           id(my_stepper).set_target(target_position);
+          id(damper_position).publish_state(target_position);
       - switch.turn_off: close_more
 
   - platform: template
@@ -133,7 +173,7 @@ switch:
       - stepper.set_target:
           id: my_stepper
           target: -2000  # Make sure the vent is fully closed (homed)
-      - delay: 5s
+      - delay: 8s
       - stepper.report_position:
           id: my_stepper
           position: 0
@@ -142,43 +182,31 @@ switch:
           speed: 1000
       - stepper.set_target:
           id: my_stepper
-          # Always leave even closed dampers open by 30 percent
-          target: !lambda 'return (30 * ${max_steps}) / 100;'      
+          target: !lambda 'return (500 * ${max_steps}) / 100;'
+      - lambda: |-
+          int position = (500 * ${max_steps}) / 100;
+          id(damper_position).publish_state(position);
       - switch.turn_off: home_now
-
-text_sensor:
-  - platform: template
-    name: "${friendly_name} Location"
-    id: damper_location
-    icon: mdi:map-marker
-    update_interval: 24h
-    lambda: |-
-      return {"${location}"};
-
-  - platform: template
-    name: "${friendly_name} Code"
-    id: damper_codeVer
-    icon: mdi:tag
-    update_interval: 24h
-    lambda: |-
-      return {"${codeVer}"};
 
 number:
   - platform: template
     name: "${friendly_name} Percentage"
-    id: damper_percentage
+    id: damper_percentage_number
     icon: mdi:percent
     min_value: 0
     max_value: 100
     step: 1
     unit_of_measurement: "%"
-    update_interval: 10s
+    update_interval: 1s
     set_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 1000  # Set a default speed or adjust as needed
+          speed: 800  # Set a default speed or adjust as needed
       - stepper.set_target:
           id: my_stepper
-          target: !lambda 'return (int(x) * ${max_steps}) / 100;'
+          target: !lambda |-
+            int steps = (int(x) * ${max_steps}) / 100;
+            id(damper_position).publish_state(steps);
+            return steps;
       - lambda: |-
-          id(damper_percentage).publish_state(x);
+          id(damper_percentage_number).publish_state(x);
