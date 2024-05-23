@@ -5,7 +5,7 @@ substitutions:
   room: "--"
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
-  version: "0.67"
+  version: "0.68"
 
 esphome:
   platform: ESP8266
@@ -175,7 +175,7 @@ switch:
       - stepper.set_target:
           id: my_stepper
           target: -2000  # Make sure the vent is fully closed (homed)
-      - delay: 8s
+      # - delay: 5s
       - stepper.report_position:
           id: my_stepper
           position: 0
