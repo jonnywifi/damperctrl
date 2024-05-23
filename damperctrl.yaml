@@ -162,7 +162,7 @@ text_sensor:
     update_interval: never
     lambda: |-
       return {"Helo World"};
-      # return {"${codeVer}"};
+      //return {"${codeVer}"};
 
 number:
   - platform: template
