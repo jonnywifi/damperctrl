@@ -81,7 +81,7 @@ api:
             then:
               - delay: 100ms  # Adjust this delay as needed
               - lambda: |-
-                  id(damper_position).publish_state(steps);
+                  id(damper_position).publish_state(id(my_stepper).current_position);
 
 
 stepper:
