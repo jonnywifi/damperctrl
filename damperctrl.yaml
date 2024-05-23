@@ -26,7 +26,8 @@ esphome:
             digitalWrite(1, LOW);   // Turn off LED
             delay(500);              // Wait 500ms
           }
-      - digitalWrite(1, LOW);  // Ensure LED is off after connecting
+      - lambda: |-
+            digitalWrite(1, LOW);  // Ensure LED is off after connecting
       - lambda: |-
           if (!id(home_now_triggered)) {
             id(home_now_triggered) = true;
