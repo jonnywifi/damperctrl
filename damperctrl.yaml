@@ -143,10 +143,7 @@ switch:
       - stepper.set_target:
           id: my_stepper
           # Always leave even closed dampers open by 30 percent
-          target: !lambda 'return (30 * ${max_steps}) / 100;'
-      - stepper.report_position:
-          id: my_stepper
-          position: 0          
+          target: !lambda 'return (30 * ${max_steps}) / 100;'      
       - switch.turn_off: home_now
 
 text_sensor:
