@@ -185,7 +185,7 @@ switch:
       - stepper.set_target:
           id: my_stepper
           target: -2000  # Make sure the vent is fully closed (homed)
-      # - delay: 5s
+      - delay: 5s
       - stepper.report_position:
           id: my_stepper
           position: 0
