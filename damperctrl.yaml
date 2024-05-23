@@ -146,23 +146,22 @@ switch:
           target: !lambda 'return (30 * ${max_steps}) / 100;'      
       - switch.turn_off: home_now
 
-# text_sensor:
-#   - platform: template
-#     name: "${friendly_name} Location"
-#     id: damper_location
-#     icon: mdi:map-marker
-#     update_interval: never
-#     lambda: |-
-#      // return {"${location}"};
+text_sensor:
+  - platform: template
+    name: "${friendly_name} Location"
+    id: damper_location
+    icon: mdi:map-marker
+    update_interval: 60s
+    lambda: |-
+      return {"${location}"};
 
-#   - platform: template
-#     name: "${friendly_name} Code"
-#     id: damper_codeVer
-#     icon: mdi:tag
-#     update_interval: never
-#     lambda: |-
-#       //return {"Helo World"};
-#       //return {"${codeVer}"};
+  - platform: template
+    name: "${friendly_name} Code"
+    id: damper_codeVer
+    icon: mdi:tag
+    update_interval: 60s
+    lambda: |-
+      return {"${codeVer}"};
 
 number:
   - platform: template
@@ -173,7 +172,7 @@ number:
     max_value: 100
     step: 1
     unit_of_measurement: "%"
-    update_interval: 60s
+    update_interval: 10s
     set_action:
       - stepper.set_speed:
           id: my_stepper
