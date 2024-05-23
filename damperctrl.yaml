@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.57"
+  version: "0.58"
 
 esphome:
   platform: ESP8266
@@ -17,15 +17,16 @@ esphome:
     version: "${version}"
 
   on_boot:
+    priority: 100  # Ensure this runs after network initialization
     then:
-      - while:
-          condition:
-            not:
-              api.connected:
-          then:
-            - light.toggle: gpio1_light
-            - delay: 500ms
-      - light.turn_off: gpio1_light
+      - lambda: |-
+          while (!api.connected()) {
+            digitalWrite(1, HIGH);  // Turn on LED
+            delay(500);              // Wait 500ms
+            digitalWrite(1, LOW);   // Turn off LED
+            delay(500);              // Wait 500ms
+          }
+      - digitalWrite(1, LOW);  // Ensure LED is off after connecting
       - lambda: |-
           if (!id(home_now_triggered)) {
             id(home_now_triggered) = true;
@@ -63,27 +64,11 @@ api:
             id: my_stepper
             target: !lambda 'return target * 5;'
 
-output:
-  - platform: gpio
-    id: gpio1_output
-    pin:
-      number: GPIO1
-      inverted: true
-      allow_other_uses: true
-
-light:
-  - platform: binary
-    id: gpio1_light
-    output: gpio1_output
-
 stepper:
   - platform: a4988
     id: my_stepper
-    step_pin:
-      number: GPIO1
-      allow_other_uses: true
-    dir_pin:
-      number: GPIO3
+    step_pin: GPIO1
+    dir_pin: GPIO3
     max_speed: 1000 steps/s
     sleep_pin: GPIO14
     acceleration: 1000.0
