@@ -4,8 +4,8 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.63"
   max_steps: "2000"
+  codeVer: "0.64"
 
 esphome:
   platform: ESP8266
@@ -15,7 +15,7 @@ esphome:
 
   project:
     name: esphome.damperctrl
-    version: "${version}"
+    codeVer: "${codeVer}"
 
   on_boot:
     priority: 100  # Ensure this runs after network initialization
@@ -156,12 +156,12 @@ text_sensor:
       return {"${location}"};
 
   - platform: template
-    name: "${friendly_name} Version"
-    id: damper_version
+    name: "${friendly_name} Code"
+    id: damper_codeVer
     icon: mdi:tag
     update_interval: never
     lambda: |-
-      return {"${version}"};
+      return {"${codeVer}"};
 
 number:
   - platform: template
