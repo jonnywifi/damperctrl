@@ -4,8 +4,8 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.66"
   max_steps: "2000"  # Total steps for full range
+  version: "0.67"
 
 esphome:
   platform: ESP8266
@@ -95,7 +95,7 @@ text_sensor:
     name: "${friendly_name} Location"
     id: damper_location
     icon: mdi:map-marker
-    update_interval: 24h
+    update_interval: never
     lambda: |-
       return {"${location}"};
 
@@ -103,7 +103,7 @@ text_sensor:
     name: "${friendly_name} Version"
     id: damper_version
     icon: mdi:tag
-    update_interval: 24h
+    update_interval: 60s
     lambda: |-
       return {"${version}"};
 
@@ -184,9 +184,9 @@ switch:
           speed: 1000
       - stepper.set_target:
           id: my_stepper
-          target: !lambda 'return (500 * ${max_steps}) / 100;'
+          target: !lambda 'return (30 * ${max_steps}) / 100;'
       - lambda: |-
-          int position = (500 * ${max_steps}) / 100;
+          int position = (30 * ${max_steps}) / 100;
           id(damper_position).publish_state(position);
       - switch.turn_off: home_now
 
