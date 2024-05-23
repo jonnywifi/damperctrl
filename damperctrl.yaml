@@ -4,8 +4,8 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  max_steps: "2000"  # Total steps for full range
   version: "0.66"
+  max_steps: "2000"  # Total steps for full range
 
 esphome:
   platform: ESP8266
@@ -114,7 +114,9 @@ text_sensor:
     lambda: |-
       float position = id(damper_position).state;
       float percentage = (position / ${max_steps}) * 100;
-      return {String(${percentage}) + "%"};
+      char buffer[10];
+      snprintf(buffer, sizeof(buffer), "%.1f%%", percentage);
+      return {buffer};
     update_interval: 1s  # Update every second to reflect real-time position
 
 switch:
