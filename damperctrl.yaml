@@ -5,7 +5,7 @@ substitutions:
   room: "--"
   maxbrightness: "0.0"
   max_steps: "2000"
-  codeVer: "0.64"
+  codeVer: "0.65"
 
 esphome:
   platform: ESP8266
@@ -151,7 +151,7 @@ text_sensor:
     name: "${friendly_name} Location"
     id: damper_location
     icon: mdi:map-marker
-    update_interval: 60s
+    update_interval: 24h
     lambda: |-
       return {"${location}"};
 
@@ -159,7 +159,7 @@ text_sensor:
     name: "${friendly_name} Code"
     id: damper_codeVer
     icon: mdi:tag
-    update_interval: 60s
+    update_interval: 24h
     lambda: |-
       return {"${codeVer}"};
 
