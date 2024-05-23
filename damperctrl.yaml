@@ -112,7 +112,7 @@ text_sensor:
     name: "${friendly_name} Location"
     id: damper_location
     icon: mdi:map-marker
-    update_interval: never
+    update_interval: 24h
     lambda: |-
       return {"${location}"};
 
@@ -120,7 +120,7 @@ text_sensor:
     name: "${friendly_name} Version"
     id: damper_version
     icon: mdi:tag
-    update_interval: 60s
+    update_interval: 24h
     lambda: |-
       return {"${version}"};
 
