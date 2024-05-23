@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.54"
+  version: "0.55"
 
 esphome:
   platform: ESP8266
@@ -15,6 +15,23 @@ esphome:
   project:
     name: esphome.damperctrl
     version: "${version}"
+
+  on_boot:
+    priority: -10  # Ensure this runs after network initialization
+    then:
+      - while:
+          condition:
+            not:
+              api.connected:
+          then:
+            - light.toggle: gpio3_light
+            - delay: 500ms
+      - light.turn_off: gpio3_light
+      - lambda: |-
+          if (!id(home_now_triggered)) {
+            id(home_now_triggered) = true;
+            id(home_now).turn_on();
+          }
 
 globals:
   - id: home_now_triggered
@@ -58,22 +75,6 @@ light:
   - platform: binary
     id: gpio3_light
     output: gpio3_output
-
-on_boot:
-  then:
-    - while:
-        condition:
-          not:
-            api.connected:
-        then:
-          - light.toggle: gpio3_light
-          - delay: 500ms
-    - light.turn_off: gpio3_light
-    - lambda: |-
-        if (!id(home_now_triggered)) {
-          id(home_now_triggered) = true;
-          id(home_now).turn_on();
-        }
 
 stepper:
   - platform: a4988
