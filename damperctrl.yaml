@@ -18,7 +18,7 @@ esphome:
     version: "${codeVer}"
 
   on_boot:
-    priority: 100  # Ensure this runs after network initialization
+    priority: 620  # Ensure this runs after network initialization
     then:
       - while:
           condition:
