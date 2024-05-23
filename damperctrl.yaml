@@ -4,7 +4,8 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.61"
+  max_steps: "2000"
+  version: "0.62"
 
 esphome:
   platform: ESP8266
@@ -66,7 +67,7 @@ api:
             speed: !lambda 'return speed;'
         - stepper.set_target:
             id: my_stepper
-            target: !lambda 'return target * 5;'
+            target: !lambda 'return (target * ${max_steps}) / 100;'
 
 stepper:
   - platform: a4988
@@ -88,7 +89,8 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position + 100);  // Adjust the step count as needed
+          int target_position = current_position + (${max_steps} / 100);  // Move 1% more
+          id(my_stepper).set_target(target_position);
       - switch.turn_off: open_more
 
   - platform: template
@@ -100,7 +102,8 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          id(my_stepper).set_target(current_position - 100);  // Adjust the step count as needed
+          int target_position = current_position - (${max_steps} / 100);  // Move 1% less
+          id(my_stepper).set_target(target_position);
       - switch.turn_off: close_more
 
   - platform: template
@@ -139,7 +142,7 @@ switch:
           speed: 1000
       - stepper.set_target:
           id: my_stepper
-          target: 500  # Open vent to the minimum desired position (0% open)
+          target: (500 * ${max_steps}) / 100  # Open vent to the minimum desired position (0% open)
       - switch.turn_off: home_now
 
 text_sensor:
@@ -175,7 +178,6 @@ number:
           speed: 800  # Set a default speed or adjust as needed
       - stepper.set_target:
           id: my_stepper
-          # Convert percentage to target steps
-          target: !lambda 'return (int(x) * 100 * 5);'
+          target: !lambda 'return (int(x) * ${max_steps}) / 100;'
       - lambda: |-
           id(damper_percentage).publish_state(x);
