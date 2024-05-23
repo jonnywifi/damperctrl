@@ -23,9 +23,9 @@ esphome:
             not:
               api.connected:
           then:
-            - light.toggle: gpio3_light
+            - light.toggle: gpio1_light
             - delay: 500ms
-      - light.turn_off: gpio3_light
+      - light.turn_off: gpio1_light
       - lambda: |-
           if (!id(home_now_triggered)) {
             id(home_now_triggered) = true;
