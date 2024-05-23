@@ -161,7 +161,8 @@ text_sensor:
     icon: mdi:tag
     update_interval: never
     lambda: |-
-      return {"${codeVer}"};
+      return {"Helo World"};
+      # return {"${codeVer}"};
 
 number:
   - platform: template
@@ -176,7 +177,7 @@ number:
     set_action:
       - stepper.set_speed:
           id: my_stepper
-          speed: 800  # Set a default speed or adjust as needed
+          speed: 1000  # Set a default speed or adjust as needed
       - stepper.set_target:
           id: my_stepper
           target: !lambda 'return (int(x) * ${max_steps}) / 100;'
