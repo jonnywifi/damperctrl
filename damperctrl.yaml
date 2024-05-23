@@ -5,7 +5,7 @@ substitutions:
   room: "--"
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
-  version: "0.68"
+  version: "0.69"
 
 esphome:
   platform: ESP8266
@@ -43,6 +43,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: previous_position
+    type: int
+    restore_value: no
+    initial_value: '0'
 
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
@@ -87,7 +91,13 @@ sensor:
     name: "${friendly_name} Position"
     id: damper_position
     lambda: |-
-      return id(my_stepper).current_position;
+      int current_position = id(my_stepper).current_position;
+      if (current_position != id(previous_position)) {
+        id(previous_position) = current_position;
+        float percentage = (current_position / ${max_steps}) * 100;
+        id(damper_percentage_number).publish_state(percentage);
+      }
+      return current_position;
     update_interval: 1s  # Update every second
 
 text_sensor:
@@ -199,7 +209,6 @@ number:
     max_value: 100
     step: 1
     unit_of_measurement: "%"
-    update_interval: 1s
     set_action:
       - stepper.set_speed:
           id: my_stepper
