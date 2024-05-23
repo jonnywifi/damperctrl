@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.59"
+  version: "0.60"
 
 esphome:
   platform: ESP8266
@@ -71,10 +71,10 @@ api:
 stepper:
   - platform: a4988
     id: my_stepper
-    step_pin: GPIO1
-    dir_pin: GPIO3
+    step_pin: GPIO1  # Also connected to the orange "power" LED
+    dir_pin: GPIO3 
     max_speed: 1000 steps/s
-    sleep_pin: GPIO14
+    sleep_pin: GPIO14  # Also connected to the blue "Active" LED
     acceleration: 1000.0
     deceleration: 1000.0
 
@@ -129,7 +129,7 @@ switch:
           position: 0
       - stepper.set_target:
           id: my_stepper
-          target: -4000  # Make sure the vent is fully closed (homed)
+          target: -2000  # Make sure the vent is fully closed (homed)
       - delay: 10s
       - stepper.report_position:
           id: my_stepper
