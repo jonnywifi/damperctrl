@@ -76,12 +76,12 @@ api:
               // id(damper_position).publish_state(steps);
               return steps;
         - while:
-          condition:
-            lambda: 'return id(my_stepper).current_position != -2000;'
-          then:
-            - delay: 100ms  # Adjust this delay as needed
-            - lambda: |-
-                id(damper_position).publish_state(steps);
+            condition:
+              lambda: 'return id(my_stepper).current_position != -2000;'
+            then:
+              - delay: 100ms  # Adjust this delay as needed
+              - lambda: |-
+                  id(damper_position).publish_state(steps);
 
 
 stepper:
