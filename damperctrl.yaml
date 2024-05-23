@@ -3,9 +3,10 @@ substitutions:
   friendly_name: Damper Control
   location: "--"
   room: "--"
+  zone: "0"
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
-  version: "0.71"
+  version: "0.72"
 
 esphome:
   platform: ESP8266
@@ -109,12 +110,28 @@ sensor:
 
 text_sensor:
   - platform: template
+    name: "${friendly_name} Room"
+    id: damper_room
+    icon: mdi:map-marker
+    update_interval: 24h
+    lambda: |-
+      return {"${room}"};
+
+  - platform: template
     name: "${friendly_name} Location"
     id: damper_location
     icon: mdi:map-marker
     update_interval: 24h
     lambda: |-
       return {"${location}"};
+
+  - platform: template
+    name: "${friendly_name} Zone"
+    id: damper_zone
+    icon: mdi:map-marker
+    update_interval: 24h
+    lambda: |-
+      return {"${zone}"};
 
   - platform: template
     name: "${friendly_name} Version"
