@@ -4,8 +4,8 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
+  version: "0.63"
   max_steps: "2000"
-  version: "0.62"
 
 esphome:
   platform: ESP8266
@@ -142,7 +142,7 @@ switch:
           speed: 1000
       - stepper.set_target:
           id: my_stepper
-          target: (500 * ${max_steps}) / 100  # Open vent to the minimum desired position (0% open)
+          target: !lambda 'return (500 * ${max_steps}) / 100;'
       - switch.turn_off: home_now
 
 text_sensor:
