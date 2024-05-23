@@ -5,7 +5,7 @@ substitutions:
   room: "--"
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
-  version: "0.69"
+  version: "0.70"
 
 esphome:
   platform: ESP8266
@@ -139,7 +139,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          int target_position = current_position + (${max_steps} / 100);  // Move 1% more
+          int target_position = current_position + (${max_steps} / 100);  # Move 1% more
           id(my_stepper).set_target(target_position);
           id(damper_position).publish_state(target_position);
       - switch.turn_off: open_more
@@ -153,7 +153,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          int target_position = current_position - (${max_steps} / 100);  // Move 1% less
+          int target_position = current_position - (${max_steps} / 100);  # Move 1% less
           id(my_stepper).set_target(target_position);
           id(damper_position).publish_state(target_position);
       - switch.turn_off: close_more
@@ -164,11 +164,11 @@ switch:
     turn_on_action:
       - lambda: |-
           for (int i = 0; i < 10; i++) {
-            // Toggle GPIO14 for LED and ensure stepper driver is not affected
-            digitalWrite(14, HIGH);  // Turn on LED
-            delay(500);              // Wait 500ms
-            digitalWrite(14, LOW);   // Turn off LED
-            delay(500);              // Wait 500ms
+            # Toggle GPIO14 for LED and ensure stepper driver is not affected
+            digitalWrite(14, HIGH);  # Turn on LED
+            delay(500);              # Wait 500ms
+            digitalWrite(14, LOW);   # Turn off LED
+            delay(500);              # Wait 500ms
           }
       - switch.turn_off: identify
 
@@ -185,10 +185,11 @@ switch:
       - stepper.set_target:
           id: my_stepper
           target: -2000  # Make sure the vent is fully closed (homed)
-      - delay: 5s
-      - stepper.report_position:
-          id: my_stepper
-          position: 0
+      - while:
+          condition:
+            lambda: 'return id(my_stepper).current_position != -2000;'
+          then:
+            - delay: 100ms  # Adjust this delay as needed
       - stepper.set_speed:
           id: my_stepper
           speed: 1000
