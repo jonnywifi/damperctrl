@@ -142,7 +142,7 @@ switch:
           speed: 1000
       - stepper.set_target:
           id: my_stepper
-          target: !lambda 'return (500 * ${max_steps}) / 100;'
+          target: !lambda 'return (10 * ${max_steps}) / 100;'
       - switch.turn_off: home_now
 
 text_sensor:
