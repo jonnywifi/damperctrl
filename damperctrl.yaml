@@ -133,7 +133,7 @@ switch:
       - stepper.set_target:
           id: my_stepper
           target: -2000  # Make sure the vent is fully closed (homed)
-      - delay: 8s
+      - delay: 5s
       - stepper.report_position:
           id: my_stepper
           position: 0
@@ -142,8 +142,8 @@ switch:
           speed: 1000
       - stepper.set_target:
           id: my_stepper
-          # Always leave even closed dampers open by 10 percent
-          target: !lambda 'return (20 * ${max_steps}) / 100;'
+          # Always leave even closed dampers open by 30 percent
+          target: !lambda 'return (30 * ${max_steps}) / 100;'
       - stepper.report_position:
           id: my_stepper
           position: 0          
