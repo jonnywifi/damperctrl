@@ -16,13 +16,6 @@ esphome:
   project:
     name: esphome.damperctrl
     version: "${codeVer}"
-  
-packages:
-  esphome.damperctrl:
-    url: https://github.com/jonnywifi/damperctrl
-    ref: main
-    files: [damperctrl.yaml]
-    refresh: 0d
 
   on_boot:
     priority: 100  # Ensure this runs after network initialization
