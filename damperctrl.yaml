@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.58"
+  version: "0.59"
 
 esphome:
   platform: ESP8266
@@ -19,15 +19,19 @@ esphome:
   on_boot:
     priority: 100  # Ensure this runs after network initialization
     then:
+      - while:
+          condition:
+            not:
+              api.connected:
+          then:
+            - lambda: |-
+                digitalWrite(1, HIGH);  // Turn on LED
+            - delay: 500ms
+            - lambda: |-
+                digitalWrite(1, LOW);   // Turn off LED
+            - delay: 500ms
       - lambda: |-
-          while (!api.connected()) {
-            digitalWrite(1, HIGH);  // Turn on LED
-            delay(500);              // Wait 500ms
-            digitalWrite(1, LOW);   // Turn off LED
-            delay(500);              // Wait 500ms
-          }
-            digitalWrite(1, LOW);  // Ensure LED is off after connecting
-      - lambda: |-
+          digitalWrite(1, LOW);  // Ensure LED is off after connecting
           if (!id(home_now_triggered)) {
             id(home_now_triggered) = true;
             id(home_now).turn_on();
