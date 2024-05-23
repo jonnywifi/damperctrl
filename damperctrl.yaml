@@ -4,7 +4,7 @@ substitutions:
   location: "--"
   room: "--"
   maxbrightness: "0.0"
-  version: "0.51"
+  version: "0.52"
 
 esphome:
   platform: ESP8266
@@ -16,12 +16,11 @@ esphome:
     name: esphome.damperctrl
     version: "${version}"
 
-  # on_boot:
-  #   # priority: -10  # Lower priority to prevent blocking
-  #   then:
-  #     - delay: 10s
-  #     - switch.turn_on:
-  #         id: home_now
+globals:
+  - id: home_now_triggered
+    type: bool
+    restore_value: no
+    initial_value: 'false'
 
 dashboard_import:
   package_import_url: github://jonnywifi/damperctrl/damperctrl.yaml@main
@@ -32,13 +31,11 @@ logger:
 ota:
 
 api:
-  on_ready:
-    then:
-      # - delay: 10s
-      - switch.turn_on:
-          id: home_now
+  # password: !secret api_password
+  encryption:
+    key: tghTNoyZDToJo3NldW6A102PI5U/skYb/RLz/LOT+2U=
   services:
-    - service: "vent_open_pcnt"
+    - service: vent_open_pcnt
       variables:
         target: int
         speed: int
@@ -49,6 +46,17 @@ api:
         - stepper.set_target:
             id: my_stepper
             target: !lambda 'return target * 5;'
+
+homeassistant:
+  on_home_assistant_state:
+    then:
+      - lambda: |-
+          if (!id(home_now_triggered)) {
+            id(home_now_triggered) = true;
+            return;
+          }
+      - switch.turn_on:
+          id: home_now
 
 stepper:
   - platform: a4988
