@@ -5,7 +5,7 @@ substitutions:
   room: "--"
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
-  version: "0.70"
+  version: "0.71"
 
 esphome:
   platform: ESP8266
@@ -73,8 +73,16 @@ api:
             id: my_stepper
             target: !lambda |-
               int steps = (target * ${max_steps}) / 100;
-              id(damper_position).publish_state(steps);
+              // id(damper_position).publish_state(steps);
               return steps;
+        - while:
+          condition:
+            lambda: 'return id(my_stepper).current_position != -2000;'
+          then:
+            - delay: 100ms  # Adjust this delay as needed
+            - lambda: |-
+                id(damper_position).publish_state(steps);
+
 
 stepper:
   - platform: a4988
@@ -137,7 +145,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          int target_position = current_position + (${max_steps} / 100);  // Move 1% more
+          int target_position = current_position + (${max_steps} / 10);  // Move 1% more
           id(my_stepper).set_target(target_position);
           id(damper_position).publish_state(target_position);
       - switch.turn_off: open_more
@@ -151,7 +159,7 @@ switch:
           speed: 800  # Adjust speed as needed
       - lambda: |-
           int current_position = id(my_stepper).current_position;
-          int target_position = current_position - (${max_steps} / 100);  // Move 1% less
+          int target_position = current_position - (${max_steps} / 10);  // Move 1% less
           id(my_stepper).set_target(target_position);
           id(damper_position).publish_state(target_position);
       - switch.turn_off: close_more
