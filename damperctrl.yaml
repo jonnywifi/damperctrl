@@ -79,10 +79,11 @@ light:
 stepper:
   - platform: a4988
     id: my_stepper
-    step_pin: GPIO1
+    step_pin:
+      number: GPIO1
+      allow_other_uses: true
     dir_pin:
       number: GPIO3
-      allow_other_uses: true
     max_speed: 1000 steps/s
     sleep_pin: GPIO14
     acceleration: 1000.0
