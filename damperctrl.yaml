@@ -6,7 +6,7 @@ substitutions:
   zone: "0"
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
-  version: "0.72"
+  version: "0.73"
 
 esphome:
   platform: ESP8266
@@ -74,15 +74,15 @@ api:
             id: my_stepper
             target: !lambda |-
               int steps = (target * ${max_steps}) / 100;
-              // id(damper_position).publish_state(steps);
+              id(damper_position).publish_state(steps);
               return steps;
         - while:
             condition:
               lambda: 'return id(my_stepper).current_position != -2000;'
             then:
               - delay: 100ms  # Adjust this delay as needed
-              - lambda: |-
-                  id(damper_position).publish_state(id(my_stepper).current_position);
+        - lambda: |-
+            id(damper_position).publish_state(id(my_stepper).current_position);
 
 
 stepper:
@@ -229,7 +229,6 @@ switch:
             - delay: 100ms  # Adjust this delay as needed
       - lambda: |-
           int position = (30 * ${max_steps}) / 100;
-          id(damper_position).publish_state(position);
       - switch.turn_off: home_now
 
 number:
