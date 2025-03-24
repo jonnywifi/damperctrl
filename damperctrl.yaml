@@ -7,9 +7,8 @@ substitutions:
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
   version: "0.73"
-
+  
 esphome:
-  board: d1_mini
   name: "${name}"
   name_add_mac_suffix: true
 
@@ -37,7 +36,10 @@ esphome:
             id(home_now_triggered) = true;
             id(home_now).turn_on();
           }
-
+          
+esp8266:
+  board: d1_mini
+  
 globals:
   - id: home_now_triggered
     type: bool
