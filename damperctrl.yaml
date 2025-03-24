@@ -9,7 +9,6 @@ substitutions:
   version: "0.73"
 
 esphome:
-  platform: ESP8266
   board: d1_mini
   name: "${name}"
   name_add_mac_suffix: true
