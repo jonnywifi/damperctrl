@@ -6,7 +6,7 @@ substitutions:
   zone: "0"
   maxbrightness: "0.0"
   max_steps: "2000"  # Total steps for full range
-  version: "0.73"
+  version: "0.74"
   
 esphome:
   name: "${name}"
