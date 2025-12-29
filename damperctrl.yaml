@@ -109,6 +109,10 @@ sensor:
       }
       return current_position;
 
+  - platform: uptime
+    name: "Uptime"
+    unit_of_measurement: "s"
+
 text_sensor:
   - platform: template
     name: "${friendly_name} Room"
