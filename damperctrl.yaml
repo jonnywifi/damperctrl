@@ -193,7 +193,7 @@ switch:
     turn_on_action:
       - repeat:
           count: 10
-          sequence:
+          then:
             - lambda: 'digitalWrite(14, HIGH);'
             - delay: 500ms
             - lambda: 'digitalWrite(14, LOW);'
