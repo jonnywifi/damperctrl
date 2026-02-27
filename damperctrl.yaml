@@ -59,6 +59,7 @@ logger:
 ota:
 
 api:
+  reboot_timeout: 0s
   # password: !secret api_password
   encryption:
     key: tghTNoyZDToJo3NldW6A102PI5U/skYb/RLz/LOT+2U=
@@ -79,9 +80,9 @@ api:
               return steps;
         - while:
             condition:
-              lambda: 'return id(my_stepper).current_position != -2000;'
+              lambda: 'return id(my_stepper).current_position != (target * ${max_steps}) / 100;'
             then:
-              - delay: 100ms  # Adjust this delay as needed
+              - delay: 100ms
         - lambda: |-
             id(damper_position).publish_state(id(my_stepper).current_position);
 
@@ -190,14 +191,13 @@ switch:
     name: "${friendly_name} Identify"
     id: identify
     turn_on_action:
-      - lambda: |-
-          for (int i = 0; i < 10; i++) {
-            // Toggle GPIO14 for LED and ensure stepper driver is not affected
-            digitalWrite(14, HIGH);  // Turn on LED
-            delay(500);              // Wait 500ms
-            digitalWrite(14, LOW);   // Turn off LED
-            delay(500);              // Wait 500ms
-          }
+      - repeat:
+          count: 10
+          sequence:
+            - lambda: 'digitalWrite(14, HIGH);'
+            - delay: 500ms
+            - lambda: 'digitalWrite(14, LOW);'
+            - delay: 500ms
       - switch.turn_off: identify
 
   - platform: template
