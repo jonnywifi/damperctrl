@@ -234,6 +234,8 @@ switch:
             - delay: 100ms  # Adjust this delay as needed
       - lambda: |-
           int position = (30 * ${max_steps}) / 100;
+          id(damper_position).publish_state(position);
+          id(damper_percentage_number).publish_state(30.0);
       - switch.turn_off: home_now
 
 number:
