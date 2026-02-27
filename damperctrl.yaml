@@ -191,14 +191,10 @@ switch:
     name: "${friendly_name} Identify"
     id: identify
     turn_on_action:
-      - repeat:
-          count: 10
-          then:
-            - lambda: 'digitalWrite(14, HIGH);'
-            - delay: 500ms
-            - lambda: 'digitalWrite(14, LOW);'
-            - delay: 500ms
-      - switch.turn_off: identify
+      - script.execute: identify_script
+    turn_off_action:
+      - script.stop: identify_script
+      - lambda: 'digitalWrite(1, LOW);'
 
   - platform: template
     name: "${friendly_name} Home Now"
@@ -237,6 +233,19 @@ switch:
           id(damper_position).publish_state(position);
           id(damper_percentage_number).publish_state(30.0);
       - switch.turn_off: home_now
+
+script:
+  - id: identify_script
+    mode: single
+    then:
+      - repeat:
+          count: 60
+          then:
+            - lambda: 'digitalWrite(1, HIGH);'
+            - delay: 500ms
+            - lambda: 'digitalWrite(1, LOW);'
+            - delay: 500ms
+      - switch.turn_off: identify
 
 number:
   - platform: template
